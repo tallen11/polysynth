@@ -4,23 +4,24 @@
 #include <cmath>
 
 #include "Constants.hpp"
-#include "WaveTables/WaveTable.hpp"
+#include "Oscillator.hpp"
 
 static int portAudioCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
 	auto out = static_cast<float*>(output);
-	auto waveTable = static_cast<WaveTable*>(userData);
-
+	auto oscillator = static_cast<Oscillator*>(userData);
 	for (int i = 0; i < frameCount; ++i) {
-		float sample = waveTable->getNextSample();
+		float sample = oscillator->getNextSample();
 		*out++ = sample;
 		*out++ = sample;
+
+		oscillator->setFrequencyValue(oscillator->getFrequencyValue() + 0.0000001);
 	}
 
 	return paContinue;
 }
 
-void setupPortAudio(PaStream *stream)
+void setupPortAudio(PaStream *stream, void *userData)
 {
 	PaError error;
 
@@ -28,10 +29,8 @@ void setupPortAudio(PaStream *stream)
     if (error != paNoError) {
         std::cout << "PortAudio error: " << Pa_GetErrorText(error) << std::endl;
     }
-
-    auto table = new WaveTable(wtSawtooth);
     
-    error = Pa_OpenDefaultStream(&stream, 0, CHANNELS, paFloat32, SAMPLE_RATE, BUFFER_SIZE, portAudioCallback, table);
+    error = Pa_OpenDefaultStream(&stream, 0, CHANNELS, paFloat32, SAMPLE_RATE, BUFFER_SIZE, portAudioCallback, userData);
     if (error != paNoError) {
         std::cout << "PortAudio stream error: " << Pa_GetErrorText(error) << std::endl;
     }
@@ -44,12 +43,15 @@ void setupPortAudio(PaStream *stream)
 
 int main(int argc, char const *argv[])
 {
-	PaStream *stream = nullptr;
-	setupPortAudio(stream);
+	auto oscillator = new Oscillator();
+	oscillator->setFrequencyValue(0.0f);
 
-	std::cout << "Done!" << std::endl;
+	PaStream *stream = nullptr;
+	setupPortAudio(stream, oscillator);
 
 	while (true);
+
+	delete oscillator;
 
 	return 0;
 }

@@ -11,7 +11,6 @@ WaveTable::WaveTable(WaveTableType type)
 
 	samples = nullptr;
 	sampleCount = 0;
-	currentIndex = 0;
 
 	(*this.*generatorFuncs[type])();
 }
@@ -19,17 +18,6 @@ WaveTable::WaveTable(WaveTableType type)
 WaveTable::~WaveTable()
 {
 	delete [] samples;
-}
-
-float WaveTable::getNextSample()
-{
-	float sample = samples[currentIndex];
-	currentIndex += 1;
-	if (currentIndex >= sampleCount) {
-		currentIndex = 0;
-	}
-
-	return sample;
 }
 
 void WaveTable::generateSineTable()
@@ -77,4 +65,9 @@ void WaveTable::normalizeTable()
 	for (int i = 0; i < sampleCount; ++i) {
 		samples[i] /= magnitude;
 	}
+}
+
+float& WaveTable::operator[](const int index)
+{
+    return samples[index];
 }

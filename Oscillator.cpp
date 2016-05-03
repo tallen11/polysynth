@@ -1,11 +1,48 @@
 #include "Oscillator.hpp"
+#include <cmath>
 
-Oscillator::Oscillator()
+Oscillator::Oscillator() : _table(wtSine)
 {
-
+	_frequencyValue = convertToFrequencyValue(OSCILLATOR_DESIRED_BASE_FREQUENCY);
+	_tableIndex = 0.0f;
+	_tableIndexIncrement = _frequencyValue / convertToFrequencyValue(OSCILLATOR_BASE_FREQUENCY);
 }
 
 Oscillator::~Oscillator()
 {
 
+}
+
+float Oscillator::getNextSample()
+{
+	/* Get next sample using linear interpolation */
+	int baseIndex = floor(_tableIndex);
+	int nextIndex = baseIndex + 1 == _table.sampleCount ? 0 : baseIndex + 1;
+	float nextPercentage = _tableIndex - baseIndex;
+	float basePercentage = 1.0f - nextPercentage;
+	float sample = basePercentage * _table[baseIndex] + nextPercentage * _table[nextIndex];
+
+	/* Increment and check index */
+	_tableIndex += _tableIndexIncrement;
+	if (_tableIndex >= _table.sampleCount) {
+		_tableIndex = _tableIndex - (float)_table.sampleCount;
+	}
+
+	return sample;
+}
+
+void Oscillator::setFrequencyValue(float value)
+{
+	if (value > 1.0f)
+		value = 1.0f;
+	else if (value < 0.0f)
+		value = 0.0f;
+
+	_frequencyValue = value;
+	_tableIndexIncrement = _frequencyValue / convertToFrequencyValue(OSCILLATOR_BASE_FREQUENCY);
+}
+
+float Oscillator::getFrequencyValue()
+{
+	return _frequencyValue;
 }

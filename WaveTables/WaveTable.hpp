@@ -7,22 +7,19 @@ enum WaveTableType
 	wtSawtooth = 2
 };
 
-class WaveTable
+struct WaveTable
 {
-public:
 	WaveTable(WaveTableType type);
 	~WaveTable();
-	float getNextSample();
 
-private:
 	void generateSineTable();
 	void generateSquareTable();
 	void generateSawtoothTable();
 	void normalizeTable();
+	float& operator[](const int index);
 
 	float *samples;
 	int sampleCount;
-	int currentIndex;
 
 	typedef void (WaveTable::*tableGeneratorFunc)();
 	tableGeneratorFunc generatorFuncs[3];
