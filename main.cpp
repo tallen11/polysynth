@@ -44,7 +44,6 @@ void setupPortAudio(PaStream *stream, void *userData)
 int main(int argc, char const *argv[])
 {
 	auto oscillator = new Oscillator();
-	oscillator->setFrequencyValue(0.0f);
 
 	PaStream *stream = nullptr;
 	setupPortAudio(stream, oscillator);

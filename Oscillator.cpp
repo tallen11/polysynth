@@ -1,7 +1,7 @@
 #include "Oscillator.hpp"
 #include <cmath>
 
-Oscillator::Oscillator() : _table(wtSine)
+Oscillator::Oscillator() : _table(wtSawtooth)
 {
 	_frequencyValue = convertToFrequencyValue(OSCILLATOR_DESIRED_BASE_FREQUENCY);
 	_tableIndex = 0.0f;
@@ -15,11 +15,12 @@ Oscillator::~Oscillator()
 
 float Oscillator::getNextSample()
 {
-	/* Get next sample using linear interpolation */
+	/* Get next sample using interpolation */
 	int baseIndex = floor(_tableIndex);
-	int nextIndex = baseIndex + 1 == _table.sampleCount ? 0 : baseIndex + 1;
+	int nextIndex = baseIndex + _tableIndexIncrement >= _table.sampleCount ? _table.sampleCount - (baseIndex + _tableIndexIncrement) : baseIndex + _tableIndexIncrement;
 	float nextPercentage = _tableIndex - baseIndex;
 	float basePercentage = 1.0f - nextPercentage;
+
 	float sample = basePercentage * _table[baseIndex] + nextPercentage * _table[nextIndex];
 
 	/* Increment and check index */
