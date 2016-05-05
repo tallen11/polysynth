@@ -6,7 +6,7 @@ Oscillator::Oscillator()
 {
 	_tables = new WaveTable*[TABLE_COUNT];
 	for (int i = 0; i < TABLE_COUNT; ++i) {
-		double hfreq = convertRanges((double)i, 0.0, (double)TABLE_COUNT, (double)MIN_FREQUENCY, (double)MAX_FREQUENCY);
+		double hfreq = convertRanges((double)i, 0.0, (double)TABLE_COUNT, MIN_FREQUENCY, MAX_FREQUENCY);
 		_tables[i] = new WaveTable(wtSawtooth, hfreq);
 	}
 
