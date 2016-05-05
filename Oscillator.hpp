@@ -19,13 +19,13 @@ public:
 
 private:
 	double _frequencyValue;
-	// float phaseValue;
+	// double phaseValue;
 	WaveTable **_tables;
 	double _currentTableIndex;
 	double _tableIndexIncrement;
 };
 
-inline double convertToFrequencyValue(float frequency)
+inline double convertToFrequencyValue(double frequency)
 {
 	return (((frequency - MIN_FREQUENCY) * (1.0 - 0.0)) / (MAX_FREQUENCY - MIN_FREQUENCY)) + 0.0;
 }
