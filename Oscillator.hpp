@@ -2,7 +2,6 @@
 
 #include "WaveTables/WaveTable.hpp"
 
-// #define WAVE_TABLE_COUNT 32
 #define MAX_FREQUENCY 20000.0f
 #define MIN_FREQUENCY 20.0f
 #define OSCILLATOR_BASE_FREQUENCY 441.0f
