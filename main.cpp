@@ -11,7 +11,7 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	auto out = static_cast<float*>(output);
 	auto oscillator = static_cast<Oscillator*>(userData);
 	for (int i = 0; i < frameCount; ++i) {
-		float sample = oscillator->getNextSample();
+		float sample = (float)oscillator->getNextSample();
 		*out++ = sample;
 		*out++ = sample;
 
@@ -44,7 +44,7 @@ void setupPortAudio(PaStream *stream, void *userData)
 int main(int argc, char const *argv[])
 {
 	auto oscillator = new Oscillator();
-	oscillator->setFrequencyValue(0.0f);
+	oscillator->setFrequencyValue(0.0);
 
 	PaStream *stream = nullptr;
 	setupPortAudio(stream, oscillator);

@@ -13,19 +13,19 @@ class Oscillator
 public:
 	Oscillator();
 	~Oscillator();
-	float getNextSample();
-	void setFrequencyValue(float value);
-	float getFrequencyValue();
+	double getNextSample();
+	void setFrequencyValue(double value);
+	double getFrequencyValue();
 
 private:
-	float _frequencyValue;
+	double _frequencyValue;
 	// float phaseValue;
 	WaveTable **_tables;
-	float _currentTableIndex;
-	float _tableIndexIncrement;
+	double _currentTableIndex;
+	double _tableIndexIncrement;
 };
 
-inline float convertToFrequencyValue(float frequency)
+inline double convertToFrequencyValue(float frequency)
 {
-	return (((frequency - MIN_FREQUENCY) * (1.0f - 0.0f)) / (MAX_FREQUENCY - MIN_FREQUENCY)) + 0.0f;
+	return (((frequency - MIN_FREQUENCY) * (1.0 - 0.0)) / (MAX_FREQUENCY - MIN_FREQUENCY)) + 0.0;
 }
