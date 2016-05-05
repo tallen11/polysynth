@@ -13,7 +13,7 @@ WaveTable.o: WaveTables/WaveTable.cpp WaveTables/WaveTable.hpp
 Oscillator.o: Oscillator.cpp Oscillator.hpp
 	$(CXX) Oscillator.cpp $(CFLAGS) -c
 
-main.o: main.cpp Constants.hpp
+main.o: main.cpp Constants.hpp Util.hpp
 	$(CXX) main.cpp $(CFLAGS) -c
 
 clean:

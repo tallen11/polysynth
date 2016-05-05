@@ -11,6 +11,20 @@ WaveTable::WaveTable(WaveTableType type)
 
 	samples = nullptr;
 	sampleCount = 0;
+	harmonicFrequency = BASE_FREQUENCY;
+
+	(*this.*generatorFuncs[type])();
+}
+
+WaveTable::WaveTable(WaveTableType type, float harmonicFreq)
+{
+	generatorFuncs[0] = &WaveTable::generateSineTable;
+	generatorFuncs[1] = &WaveTable::generateSquareTable;
+	generatorFuncs[2] = &WaveTable::generateSawtoothTable;
+
+	samples = nullptr;
+	sampleCount = 0;
+	harmonicFrequency = harmonicFreq;
 
 	(*this.*generatorFuncs[type])();
 }
@@ -44,14 +58,12 @@ void WaveTable::generateSawtoothTable()
 	for (int i = 0; i < tableLength; ++i) {
 		float x = static_cast<float>(i) / SAMPLE_RATE;
 		samples[i] = -sin(2.0f * M_PI * BASE_FREQUENCY * x);
-		for (int j = 2; j * BASE_FREQUENCY < SAMPLE_RATE / 2; ++j) {
+		for (int j = 2; j * harmonicFrequency < SAMPLE_RATE / 2; ++j) {
 			samples[i] += pow(-1.0f, j) * (sin(2.0f * M_PI * BASE_FREQUENCY * j * x) / j);
 		}
 
 		samples[i] = 0.5 - (1.0f / M_PI) * samples[i];
 	}
-
-	// normalizeTable();
 }
 
 void WaveTable::normalizeTable()
@@ -65,9 +77,4 @@ void WaveTable::normalizeTable()
 	for (int i = 0; i < sampleCount; ++i) {
 		samples[i] /= magnitude;
 	}
-}
-
-float& WaveTable::operator[](const int index)
-{
-    return samples[index];
 }

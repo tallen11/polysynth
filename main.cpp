@@ -49,7 +49,8 @@ int main(int argc, char const *argv[])
 	PaStream *stream = nullptr;
 	setupPortAudio(stream, oscillator);
 
-	while (true);
+	char input;
+	while ((input = getch()) != 'q');
 
 	delete oscillator;
 

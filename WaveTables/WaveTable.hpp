@@ -10,16 +10,17 @@ enum WaveTableType
 struct WaveTable
 {
 	WaveTable(WaveTableType type);
+	WaveTable(WaveTableType type, float harmonicFreq);
 	~WaveTable();
 
 	void generateSineTable();
 	void generateSquareTable();
 	void generateSawtoothTable();
 	void normalizeTable();
-	float& operator[](const int index);
 
 	float *samples;
 	int sampleCount;
+	float harmonicFrequency;
 
 	typedef void (WaveTable::*tableGeneratorFunc)();
 	tableGeneratorFunc generatorFuncs[3];
