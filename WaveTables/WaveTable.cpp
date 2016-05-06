@@ -40,7 +40,7 @@ void WaveTable::generateSineTable()
 	samples = new double[tableLength];
 	sampleCount = tableLength;
 	for (int i = 0; i < tableLength; ++i) {
-		double x = static_cast<float>(i) / SAMPLE_RATE;
+		double x = static_cast<double>(i) / SAMPLE_RATE;
 		samples[i] = sin(2.0 * M_PI * BASE_FREQUENCY * x);
 	}
 }
@@ -56,13 +56,16 @@ void WaveTable::generateSawtoothTable()
 	samples = new double[tableLength];
 	sampleCount = tableLength;
 	for (int i = 0; i < tableLength; ++i) {
-		double x = static_cast<float>(i) / SAMPLE_RATE;
+		double x = static_cast<double>(i) / SAMPLE_RATE;
 		samples[i] = -sin(2.0 * M_PI * BASE_FREQUENCY * x);
 		for (int j = 2; j * harmonicFrequency < SAMPLE_RATE / 2; ++j) {
-			samples[i] += pow(-1.0, j) * (sin(2.0 * M_PI * BASE_FREQUENCY * j * x) / j);
+			samples[i] += pow(-1.0, j) * (sin(2.0 * M_PI * BASE_FREQUENCY * j * x) / j);			
 		}
 
 		samples[i] = 0.5 - (1.0 / M_PI) * samples[i];
+
+		// double gibbs = pow(cos((2.0) - 1.0), 2.0) * (M_PI / (2.0 * (SAMPLE_RATE / harmonicFrequency)));
+		// samples[i] *= gibbs;
 	}
 }
 

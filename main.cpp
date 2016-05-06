@@ -1,21 +1,38 @@
 #include <iostream>
 #include <PortAudio.h>
-#include <curses.h>
 #include <cmath>
 
 #include "Constants.hpp"
 #include "Oscillator.hpp"
+#include "Synth.hpp"
+#include "Util.hpp"
 
+static int count = 0;
+static bool pressing = true;
 static int portAudioCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
+	(void)input;
+	(void)timeInfo;
+	(void)statusFlags;
+
 	auto out = static_cast<float*>(output);
-	auto oscillator = static_cast<Oscillator*>(userData);
+	auto synth = static_cast<Synth*>(userData);
 	for (int i = 0; i < frameCount; ++i) {
-		float sample = (float)oscillator->getNextSample();
+		if (count % SAMPLE_RATE == 0) {
+			if (pressing) {
+				synth->keyPressed(0);
+			} else {
+				synth->keyReleased(0);
+			}
+
+			pressing = !pressing;
+		}
+
+		float sample = static_cast<float>(synth->getNextSample());
 		*out++ = sample;
 		*out++ = sample;
 
-		oscillator->setFrequencyValue(oscillator->getFrequencyValue() + 0.0000001);
+		count++;
 	}
 
 	return paContinue;
@@ -43,15 +60,20 @@ void setupPortAudio(PaStream *stream, void *userData)
 
 int main(int argc, char const *argv[])
 {
-	auto oscillator = new Oscillator();
-	oscillator->setFrequencyValue(0.0);
+	(void)argc;
+	(void)argv;
+
+	// auto oscillator = new Oscillator();
+	// oscillator->setFrequencyValue(convertRanges(440.0, 20.0, 20000.0, 0.0, 1.0));
+
+	auto synth = new Synth();
 
 	PaStream *stream = nullptr;
-	setupPortAudio(stream, oscillator);
+	setupPortAudio(stream, synth);
 
 	while (true);
 
-	delete oscillator;
+	// delete oscillator;
 
 	return 0;
 }
