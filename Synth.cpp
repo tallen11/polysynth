@@ -1,4 +1,5 @@
 #include "Synth.hpp"
+#include "Constants.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -18,20 +19,24 @@ Synth::~Synth()
 	for (auto oscillator : oscillators) {
 		delete oscillator;
 	}
+
+	for (auto envelope : envelopes) {
+		delete envelope;
+	}
 }
 
 double Synth::getNextSample()
 {
-	// Mix all oscillator signals here. Do basic summing for now
+	// Update envelopes
 	for (auto envelope : envelopes) {
 		envelope->update();
 	}
 
+	// Mix all oscillator signals
 	double total = 0.0;
 	for (auto oscillator : oscillators) {
 		total += oscillator->getNextSample();
 	}
-
 	total /= oscillators.size();
 
 	return total;
@@ -39,8 +44,8 @@ double Synth::getNextSample()
 
 void Synth::keyPressed(int midiKey)
 {
-	int key = -(69 - midiKey);
-	double frequencyValue = convertToFrequencyValue(pow(2.0, (double)key / 12.0) * 440.0);
+	int key = -(REFERENCE_MIDI - midiKey);
+	double frequencyValue = convertToFrequencyValue(pow(2.0, (double)key / 12.0) * REFERENCE_FREQUENCY);
 
 	for (auto oscillator : oscillators) {
 		oscillator->setFrequencyValue(frequencyValue);
