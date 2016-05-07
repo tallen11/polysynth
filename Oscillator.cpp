@@ -56,24 +56,22 @@ double Oscillator::getNextSample()
 	// double finalSample = sample1 + sample2;
 
 
-	int sampleCount = _table.sampleCount;
 
 	int baseIndex = static_cast<int>(floor(_currentTableIndex));
-	int nextIndex = baseIndex + _tableIndexIncrement >= sampleCount ? sampleCount - (baseIndex + _tableIndexIncrement) : baseIndex + _tableIndexIncrement;
-	double nextPercentage = _currentTableIndex - baseIndex;
+	int nextIndex = baseIndex + 1 >= _table.sampleCount ? 0 : baseIndex + 1;
+	double nextPercentage = _currentTableIndex - static_cast<double>(baseIndex);
 	double basePercentage = 1.0 - nextPercentage;
-	
-	double finalSample = volumeParameter->getValue() * 
-						 volumeEnvelopeParameter->getValue() * 
-						 (basePercentage * _table.samples[baseIndex] + nextPercentage * _table.samples[nextIndex]);
 
-	/* Increment and check index */
+	double sample = volumeParameter->getValue() * 
+					volumeEnvelopeParameter->getValue() * 
+					(basePercentage * _table.samples[baseIndex] + nextPercentage * _table.samples[nextIndex]);
+
 	_currentTableIndex += _tableIndexIncrement;
-	if (_currentTableIndex >= sampleCount) {
-		_currentTableIndex = _currentTableIndex - static_cast<double>(sampleCount);
+	if (_currentTableIndex >= _table.sampleCount) {
+		_currentTableIndex = _currentTableIndex - static_cast<double>(_table.sampleCount);
 	}
 
-	return finalSample;
+	return sample;
 }
 
 void Oscillator::setFrequencyValue(double value)

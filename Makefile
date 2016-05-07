@@ -22,7 +22,7 @@ EnvelopeGenerator.o: EnvelopeGenerator.cpp EnvelopeGenerator.hpp
 Synth.o: Synth.cpp Synth.hpp
 	$(CXX) Synth.cpp $(CFLAGS) -c
 
-main.o: main.cpp Constants.hpp Util.hpp
+main.o: main.cpp Constants.hpp Util.hpp Notes.hpp
 	$(CXX) main.cpp $(CFLAGS) -c
 
 clean:

@@ -52,7 +52,7 @@ void WaveTable::generateSquareTable()
 
 void WaveTable::generateSawtoothTable()
 {
-	int tableLength = static_cast<int>(floor(SAMPLE_RATE / BASE_FREQUENCY));
+	int tableLength = static_cast<int>(floor(SAMPLE_RATE / BASE_FREQUENCY)) + 1;
 	samples = new double[tableLength];
 	sampleCount = tableLength;
 	for (int i = 0; i < tableLength; ++i) {

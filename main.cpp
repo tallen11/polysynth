@@ -9,6 +9,8 @@
 
 static int count = 0;
 static bool pressing = true;
+static int key = 69;
+static int inc = -1;
 static int portAudioCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
 	(void)input;
@@ -17,14 +19,21 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 
 	auto out = static_cast<float*>(output);
 	auto synth = static_cast<Synth*>(userData);
+
 	for (int i = 0; i < frameCount; ++i) {
-		if (count % SAMPLE_RATE == 0) {
+		if (count % (SAMPLE_RATE / 8) == 0) {
 			if (pressing) {
-				synth->keyPressed(0);
+				synth->keyPressed(key);
 			} else {
-				synth->keyReleased(0);
+				synth->keyReleased(key);
 			}
 
+			key += inc;
+			if (key == 30) {
+				inc = 1;
+			} else  if (key == 77) {
+				inc = -1;
+			}
 			pressing = !pressing;
 		}
 
