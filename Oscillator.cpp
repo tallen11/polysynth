@@ -55,8 +55,6 @@ double Oscillator::getNextSample()
 	// double sample2 = tableWeight2 * (basePercentage * _tables[tableIndex2]->samples[baseIndex] + nextPercentage * _tables[tableIndex2]->samples[nextIndex]);
 	// double finalSample = sample1 + sample2;
 
-
-
 	int baseIndex = static_cast<int>(floor(_currentTableIndex));
 	int nextIndex = baseIndex + 1 >= _table.sampleCount ? 0 : baseIndex + 1;
 	double nextPercentage = _currentTableIndex - static_cast<double>(baseIndex);
@@ -82,9 +80,9 @@ void Oscillator::setFrequencyValue(double value)
 		value = 0.0;
 
 	_frequencyValue = value;
-	double dv = SAMPLE_RATE / _table.sampleCount;
+
 	double frequency = convertRanges(_frequencyValue, 0.0, 1.0, MIN_FREQUENCY, MAX_FREQUENCY);
-	_tableIndexIncrement = (_tableIndexIncrement + frequency) / dv;
+	_tableIndexIncrement = frequency / BASE_FREQUENCY; // (_tableIndexIncrement + frequency) / BASE_FREQUENCY;
 }
 
 double Oscillator::getFrequencyValue() const

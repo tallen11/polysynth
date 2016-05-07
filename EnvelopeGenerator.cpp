@@ -7,8 +7,6 @@ EnvelopeGenerator::EnvelopeGenerator()
 	state = esWaiting;
 	stateCounter = 0;
 	progressCounter = 0;
-	// sustainCounter = 0;
-
 	attack = SAMPLE_RATE;
 	decay = SAMPLE_RATE;
 	sustain = 1.0;
@@ -21,8 +19,6 @@ EnvelopeGenerator::EnvelopeGenerator(double attack, double decay, double sustain
 	state = esWaiting;
 	stateCounter = 0;
 	progressCounter = 0;
-	// sustainCounter = 0;
-
 	this->attack = SAMPLE_RATE * attack;
 	this->decay = SAMPLE_RATE * decay;
 	this->sustain = sustain;
@@ -54,9 +50,6 @@ void EnvelopeGenerator::update()
 			double multiplier = (1.0 / attack) * stateCounter;
 			parameter->multiplyValue(multiplier);
 			lastMultiplier = multiplier;
-
-			// std::cout << "attacking: " << stateCounter << std::endl;
-
 			break;
 		}
 
@@ -71,9 +64,6 @@ void EnvelopeGenerator::update()
 			double multiplier = ((sustain - 1.0) / decay) * (stateCounter - attack) + 1.0;
 			parameter->multiplyValue(multiplier);
 			lastMultiplier = multiplier;
-
-			// std::cout << "decaying: " << stateCounter << std::endl;
-
 			break;
 		}
 
@@ -82,9 +72,6 @@ void EnvelopeGenerator::update()
 			progressCounter++;
 			parameter->multiplyValue(sustain);
 			lastMultiplier = sustain;
-
-			// std::cout << "sustaining: " << stateCounter << std::endl;
-
 			break;
 		}
 
@@ -97,9 +84,6 @@ void EnvelopeGenerator::update()
 
 			double multiplier = (-lastMultiplier / release) * (stateCounter - progressCounter) + lastMultiplier;
 			parameter->multiplyValue(multiplier);
-
-			// std::cout << "releasing: " << stateCounter << std::endl;
-
 			break;
 		}
 	}

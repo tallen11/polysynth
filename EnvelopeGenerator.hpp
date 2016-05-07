@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 enum EnvelopeState {
-	esWaiting,
+	esWaiting = 0,
 	esAttacking,
 	esDecaying,
 	esSustaining,
@@ -36,5 +36,4 @@ private:
 	EnvelopeState state;
 	uint64_t stateCounter;
 	uint64_t progressCounter;
-	// uint64_t sustainCounter;
 };

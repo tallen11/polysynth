@@ -9,8 +9,9 @@
 
 static int count = 0;
 static bool pressing = true;
-static int key = 69;
-static int inc = -1;
+static int key = 0;
+static int inc = 1;
+static int notes[] = {60, 62, 64, 65, 67, 69, 71, 72};
 static int portAudioCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
 	(void)input;
@@ -21,19 +22,20 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	auto synth = static_cast<Synth*>(userData);
 
 	for (int i = 0; i < frameCount; ++i) {
-		if (count % (SAMPLE_RATE / 8) == 0) {
+		if (count % (SAMPLE_RATE / 4) == 0) {
 			if (pressing) {
-				synth->keyPressed(key);
+				synth->keyPressed(notes[key]);
+				key += inc;
 			} else {
-				synth->keyReleased(key);
+				synth->keyReleased(notes[key]);
 			}
 
-			key += inc;
-			if (key == 30) {
+			if (key == 0) {
 				inc = 1;
-			} else  if (key == 77) {
+			} else  if (key == 7) {
 				inc = -1;
 			}
+
 			pressing = !pressing;
 		}
 
@@ -76,6 +78,8 @@ int main(int argc, char const *argv[])
 	// oscillator->setFrequencyValue(convertRanges(440.0, 20.0, 20000.0, 0.0, 1.0));
 
 	auto synth = new Synth();
+
+	// synth->keyPressed(69);
 
 	PaStream *stream = nullptr;
 	setupPortAudio(stream, synth);
