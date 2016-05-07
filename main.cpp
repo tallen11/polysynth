@@ -7,14 +7,8 @@
 #include "Oscillator.hpp"
 #include "Synth.hpp"
 #include "Util.hpp"
-
 #include "Libraries/RtMidi/RtMidi.h"
 
-static int count = 0;
-static bool pressing = true;
-static int key = 0;
-static int inc = 1;
-static int notes[] = {60, 62, 64, 65, 67, 69, 71, 72};
 static int portAudioCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
 	(void)input;
@@ -25,28 +19,9 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	auto synth = static_cast<Synth*>(userData);
 
 	for (int i = 0; i < frameCount; ++i) {
-		// if (count % (SAMPLE_RATE / 4) == 0) {
-		// 	if (pressing) {
-		// 		synth->keyPressed(notes[key]);
-		// 		key += inc;
-		// 	} else {
-		// 		synth->keyReleased(notes[key]);
-		// 	}
-
-		// 	if (key == 0) {
-		// 		inc = 1;
-		// 	} else  if (key == 7) {
-		// 		inc = -1;
-		// 	}
-
-		// 	pressing = !pressing;
-		// }
-
 		float sample = static_cast<float>(synth->getNextSample());
 		*out++ = sample;
 		*out++ = sample;
-
-		count++;
 	}
 
 	return paContinue;
@@ -75,8 +50,29 @@ static void midiCallback(double deltaTime, std::vector<unsigned char> *message, 
 
 			break;
 
-		default:
-			std::cout << "Unhandled data with status: " << (int)status << std::endl;
+		// case 14:
+		// 	// This kind of works but it's more trouble than it's worth right now
+		// 	unsigned char lsb = messageRef[1];
+		// 	unsigned char msb = messageRef[2];
+		// 	unsigned int value = 0;
+		// 	value |= msb;
+		// 	value <<= 7;
+		// 	value |= lsb;
+			
+		// 	int half = value / 2;
+		// 	double freqMultiplier = 1.0;
+		// 	if (half < INT16_MAX / 2) {
+		// 		freqMultiplier = convertRanges(static_cast<double>(value), 0.0, 16383.0/2.0, 0.5, 1.0);
+		// 	} else if (half > INT16_MAX / 2) {
+		// 		freqMultiplier = convertRanges(static_cast<double>(value), 0.0, 16383.0/2.0, 1.0, 2.0);
+		// 	}
+
+		// 	synth->pitchBend(freqMultiplier);
+
+		// 	break;
+
+		// default:
+			// std::cout << "Unhandled data with status: " << (int)status << std::endl;
 	}
 }
 

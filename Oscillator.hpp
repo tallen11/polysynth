@@ -15,20 +15,18 @@ public:
 	Oscillator();
 	~Oscillator();
 	double getNextSample();
-	void setFrequencyValue(double value);
-	double getFrequencyValue() const;
 
+	Parameter* getFrequencyParameter();
 	Parameter* getVolumeParameter();
 	Parameter* getVolumeEnvelopeParameter();
 
 private:
-	double _frequencyValue;
 	// double phaseValue;
 	// WaveTable **_tables;
 	WaveTable _table;
 	double _currentTableIndex;
-	double _tableIndexIncrement;
 
+	Parameter *frequencyParameter;
 	Parameter *volumeParameter;
 	Parameter *volumeEnvelopeParameter;
 	Parameter *phaseParameter;

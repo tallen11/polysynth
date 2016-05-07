@@ -6,7 +6,7 @@
 Synth::Synth()
 {
 	auto osc = new Oscillator();
-	auto env = new EnvelopeGenerator(1.0, 0.1, 0.9, 0.02);
+	auto env = new EnvelopeGenerator(1.0, 0.1, 0.9, 1.0);
 
 	env->setParameter(osc->getVolumeEnvelopeParameter());
 
@@ -54,13 +54,8 @@ void Synth::keyPressed(int midiKey)
 	int key = -(REFERENCE_MIDI - midiKey);
 	double frequencyValue = convertToFrequencyValue(pow(2.0, (double)key / 12.0) * REFERENCE_FREQUENCY);
 
-
-
-
-
-
 	for (auto oscillator : oscillators) {
-		oscillator->setFrequencyValue(frequencyValue);
+		oscillator->getFrequencyParameter()->setValue(frequencyValue);
 	}
 
 	for (auto envelope : envelopes) {
@@ -72,5 +67,12 @@ void Synth::keyReleased(int midiKey)
 {	
 	for (auto envelope : envelopes) {
 		envelope->noteReleased();
+	}
+}
+
+void Synth::pitchBend(double amount)
+{
+	for (auto oscillator : oscillators) {
+		oscillator->getFrequencyParameter()->multiplyValue(amount);
 	}
 }

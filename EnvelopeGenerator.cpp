@@ -12,6 +12,7 @@ EnvelopeGenerator::EnvelopeGenerator()
 	sustain = 1.0;
 	release = SAMPLE_RATE;
 	lastMultiplier = 0.0;
+	startMultiplier = 0.0;
 }
 
 EnvelopeGenerator::EnvelopeGenerator(double attack, double decay, double sustain, double release)
@@ -24,6 +25,7 @@ EnvelopeGenerator::EnvelopeGenerator(double attack, double decay, double sustain
 	this->sustain = sustain;
 	this->release = SAMPLE_RATE * release;
 	lastMultiplier = 0.0;
+	startMultiplier = 0.0;
 }
 
 EnvelopeGenerator::~EnvelopeGenerator()
@@ -36,6 +38,7 @@ void EnvelopeGenerator::update()
 	switch (state) {
 		case esWaiting: {
 			parameter->multiplyValue(0.0);
+			lastMultiplier = 0.0;
 			break;
 		}
 
@@ -47,7 +50,8 @@ void EnvelopeGenerator::update()
 				break;
 			}
 
-			double multiplier = (1.0 / attack) * stateCounter;
+
+			double multiplier = ((1.0 - startMultiplier) / attack) * stateCounter + startMultiplier;
 			parameter->multiplyValue(multiplier);
 			lastMultiplier = multiplier;
 			break;
@@ -79,6 +83,7 @@ void EnvelopeGenerator::update()
 			stateCounter++;
 			if (stateCounter > release + progressCounter) {
 				state = esWaiting;
+				lastMultiplier = 0.0;
 				break;
 			}
 
@@ -94,7 +99,8 @@ void EnvelopeGenerator::notePressed()
 	state = esAttacking;
 	stateCounter = 0;
 	progressCounter = 0;
-	lastMultiplier = 0.0;
+	startMultiplier = lastMultiplier;
+	// lastMultiplier = 0.0;
 }
 
 void EnvelopeGenerator::noteReleased()

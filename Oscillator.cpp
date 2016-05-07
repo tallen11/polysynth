@@ -13,18 +13,20 @@ Oscillator::Oscillator() : _table(wtSawtooth)
 	// 	// hfreq = hfreq * 2.0;
 	// }
 
-	setFrequencyValue(convertToFrequencyValue(OSCILLATOR_DESIRED_BASE_FREQUENCY));
-	_currentTableIndex = 0.0;
-
+	frequencyParameter = new Parameter(0.0, 1.0, convertToFrequencyValue(OSCILLATOR_DESIRED_BASE_FREQUENCY));
 	volumeParameter = new Parameter(1.0, 0.0, 1.0);
 	volumeEnvelopeParameter = new Parameter(1.0, 0.0, 1.0);
 	phaseParameter = new Parameter(2.0 * M_PI, 0.0, M_PI);
+
+	_currentTableIndex = 0.0;
 }
 
 Oscillator::~Oscillator()
 {
+	delete frequencyParameter;
 	delete volumeParameter;
 	delete volumeEnvelopeParameter;
+	delete phaseParameter;
 
 	// for (int i = 0; i < TABLE_COUNT; ++i) {
 	// 	delete _tables[i];
@@ -65,7 +67,8 @@ double Oscillator::getNextSample()
 					volumeEnvelopeParameter->getValue() * 
 					(basePercentage * _table.samples[baseIndex] + nextPercentage * _table.samples[nextIndex]);
 
-	_currentTableIndex += _tableIndexIncrement;
+	double frequency = convertRanges(frequencyParameter->getValue(), 0.0, 1.0, MIN_FREQUENCY, MAX_FREQUENCY);
+	_currentTableIndex += frequency / BASE_FREQUENCY; // _tableIndexIncrement;
 	if (_currentTableIndex >= _table.sampleCount) {
 		_currentTableIndex = _currentTableIndex - static_cast<double>(_table.sampleCount);
 	}
@@ -73,22 +76,9 @@ double Oscillator::getNextSample()
 	return sample;
 }
 
-void Oscillator::setFrequencyValue(double value)
+Parameter* Oscillator::getFrequencyParameter()
 {
-	if (value > 1.0)
-		value = 1.0;
-	else if (value < 0.0)
-		value = 0.0;
-
-	_frequencyValue = value;
-
-	double frequency = convertRanges(_frequencyValue, 0.0, 1.0, MIN_FREQUENCY, MAX_FREQUENCY);
-	_tableIndexIncrement = frequency / BASE_FREQUENCY; // (_tableIndexIncrement + frequency) / BASE_FREQUENCY;
-}
-
-double Oscillator::getFrequencyValue() const
-{
-	return _frequencyValue;
+	return frequencyParameter;
 }
 
 Parameter* Oscillator::getVolumeParameter()

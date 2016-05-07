@@ -32,6 +32,7 @@ private:
 	double sustain;
 	double release;
 	double lastMultiplier;
+	double startMultiplier;
 	Parameter *parameter;
 	EnvelopeState state;
 	uint64_t stateCounter;
