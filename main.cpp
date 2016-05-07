@@ -25,22 +25,22 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	auto synth = static_cast<Synth*>(userData);
 
 	for (int i = 0; i < frameCount; ++i) {
-		if (count % (SAMPLE_RATE / 4) == 0) {
-			if (pressing) {
-				synth->keyPressed(notes[key]);
-				key += inc;
-			} else {
-				synth->keyReleased(notes[key]);
-			}
+		// if (count % (SAMPLE_RATE / 4) == 0) {
+		// 	if (pressing) {
+		// 		synth->keyPressed(notes[key]);
+		// 		key += inc;
+		// 	} else {
+		// 		synth->keyReleased(notes[key]);
+		// 	}
 
-			if (key == 0) {
-				inc = 1;
-			} else  if (key == 7) {
-				inc = -1;
-			}
+		// 	if (key == 0) {
+		// 		inc = 1;
+		// 	} else  if (key == 7) {
+		// 		inc = -1;
+		// 	}
 
-			pressing = !pressing;
-		}
+		// 	pressing = !pressing;
+		// }
 
 		float sample = static_cast<float>(synth->getNextSample());
 		*out++ = sample;
@@ -54,19 +54,29 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 
 static void midiCallback(double deltaTime, std::vector<unsigned char> *message, void *userData)
 {
+	auto synth = static_cast<Synth*>(userData);
 	std::vector<unsigned char>& messageRef = *message;
 	unsigned char status = messageRef[0] >> 4;
 	switch (status) {
 		case 8:
-			std::cout << "Note off! Key: " << messageRef[1] << ", vel: " << messageRef[2] << std::endl;
+			// std::cout << "Note off! Key: " << (int)messageRef[1] << ", vel: " << (int)messageRef[2] << std::endl;
+			synth->keyReleased((int)messageRef[1]);
 			break;
 
 		case 9:
-			std::cout << "Note on! Key: " << messageRef[1] << ", vel: " << messageRef[2] << std::endl;
+			// std::cout << "Note on! Key: " << (int)messageRef[1] << ", vel: " << (int)messageRef[2] << std::endl;
+			synth->keyPressed((int)messageRef[1]);
+			break;
+
+		case 11:
+			if (messageRef[1] == 7) {
+				synth->setMasterVolume(convertRanges(static_cast<double>(messageRef[2]), 0.0, 127.0, 0.0, 1.0));
+			}
+
 			break;
 
 		default:
-			std::cout << "Unhandled data with status: " << status << std::endl;
+			std::cout << "Unhandled data with status: " << (int)status << std::endl;
 	}
 }
 
@@ -93,7 +103,7 @@ void setupPortAudio(PaStream *stream, void *userData)
 void setupRtMidi(RtMidiIn *midiIn, Synth *synth)
 {
 	try {
-		midiIn = new RtMidiIn();
+		midiIn = new RtMidiIn(RtMidi::MACOSX_CORE);
 	} catch (RtMidiError &error) {
 		error.printMessage();
 	}

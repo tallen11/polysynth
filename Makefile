@@ -1,6 +1,6 @@
 CXX=clang++
 DEBUG=-g
-LFLAGS=-lportaudio
+LFLAGS=-lportaudio -framework CoreFoundation -framework CoreAudio -framework CoreMidi
 CFLAGS=-Wall -pedantic -Wunused-parameter -Wold-style-cast -Wunreachable-code -std=c++14 $(DEBUG)
 SRC=Parameter.o WaveTable.o Oscillator.o EnvelopeGenerator.o Synth.o RtMidi.o main.o
 

@@ -42,6 +42,13 @@ double Synth::getNextSample()
 	return total;
 }
 
+void Synth::setMasterVolume(double volume)
+{
+	for (auto oscillator : oscillators) {
+		oscillator->getVolumeParameter()->setValue(volume);
+	}
+}
+
 void Synth::keyPressed(int midiKey)
 {
 	int key = -(REFERENCE_MIDI - midiKey);

@@ -567,6 +567,8 @@ inline void RtMidiOut :: setErrorCallback( RtMidiErrorCallback errorCallback, vo
 //
 // **************************************************************** //
 
+#define __MACOSX_CORE__
+
 #if !defined(__LINUX_ALSA__) && !defined(__UNIX_JACK__) && !defined(__MACOSX_CORE__) && !defined(__WINDOWS_MM__)
   #define __RTMIDI_DUMMY__
 #endif

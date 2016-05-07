@@ -10,6 +10,7 @@ public:
 	Synth();
 	~Synth();
 	double getNextSample();
+	void setMasterVolume(double volume);
 	void keyPressed(int midiKey);
 	void keyReleased(int midiKey);
 
