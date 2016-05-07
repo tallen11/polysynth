@@ -1,11 +1,14 @@
 #include <iostream>
 #include <PortAudio.h>
 #include <cmath>
+#include <string>
 
 #include "Constants.hpp"
 #include "Oscillator.hpp"
 #include "Synth.hpp"
 #include "Util.hpp"
+
+#include "Libraries/RtMidi/RtMidi.h"
 
 static int count = 0;
 static bool pressing = true;
@@ -49,6 +52,24 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	return paContinue;
 }
 
+static void midiCallback(double deltaTime, std::vector<unsigned char> *message, void *userData)
+{
+	std::vector<unsigned char>& messageRef = *message;
+	unsigned char status = messageRef[0] >> 4;
+	switch (status) {
+		case 8:
+			std::cout << "Note off! Key: " << messageRef[1] << ", vel: " << messageRef[2] << std::endl;
+			break;
+
+		case 9:
+			std::cout << "Note on! Key: " << messageRef[1] << ", vel: " << messageRef[2] << std::endl;
+			break;
+
+		default:
+			std::cout << "Unhandled data with status: " << status << std::endl;
+	}
+}
+
 void setupPortAudio(PaStream *stream, void *userData)
 {
 	PaError error;
@@ -69,6 +90,32 @@ void setupPortAudio(PaStream *stream, void *userData)
     }
 }
 
+void setupRtMidi(RtMidiIn *midiIn, Synth *synth)
+{
+	try {
+		midiIn = new RtMidiIn();
+	} catch (RtMidiError &error) {
+		error.printMessage();
+	}
+
+	unsigned int nPorts = midiIn->getPortCount();
+	std::cout << "RtMidi found " << nPorts << " MIDI sources" << std::endl;
+
+	std::string portName;
+	for (unsigned int i = 0; i < nPorts; ++i) {
+		try {
+			portName = midiIn->getPortName(i);
+		} catch (RtMidiError &error) {
+			error.printMessage();
+		}
+
+		std::cout << "Input port " << i + 1 << ": " << portName << std::endl;
+	}
+
+	midiIn->openPort(0);
+	midiIn->setCallback(&midiCallback, synth);
+}
+
 int main(int argc, char const *argv[])
 {
 	(void)argc;
@@ -79,13 +126,15 @@ int main(int argc, char const *argv[])
 
 	auto synth = new Synth();
 
-	// synth->keyPressed(69);
-
 	PaStream *stream = nullptr;
 	setupPortAudio(stream, synth);
 
+	RtMidiIn *midiIn = nullptr;
+	setupRtMidi(midiIn, synth);
+
 	while (true);
 
+	// delete midiIn;
 	// delete oscillator;
 
 	return 0;

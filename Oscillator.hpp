@@ -31,6 +31,7 @@ private:
 
 	Parameter *volumeParameter;
 	Parameter *volumeEnvelopeParameter;
+	Parameter *phaseParameter;
 };
 
 inline double convertToFrequencyValue(double frequency)

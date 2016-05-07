@@ -12,11 +12,12 @@ WaveTable::WaveTable(WaveTableType type)
 	samples = nullptr;
 	sampleCount = 0;
 	harmonicFrequency = BASE_FREQUENCY;
+	phaseShift = 0.0;
 
 	(*this.*generatorFuncs[type])();
 }
 
-WaveTable::WaveTable(WaveTableType type, double harmonicFreq)
+WaveTable::WaveTable(WaveTableType type, double shift)
 {
 	generatorFuncs[0] = &WaveTable::generateSineTable;
 	generatorFuncs[1] = &WaveTable::generateSquareTable;
@@ -24,7 +25,8 @@ WaveTable::WaveTable(WaveTableType type, double harmonicFreq)
 
 	samples = nullptr;
 	sampleCount = 0;
-	harmonicFrequency = harmonicFreq;
+	harmonicFrequency = BASE_FREQUENCY;
+	phaseShift = shift;
 
 	(*this.*generatorFuncs[type])();
 }
@@ -41,7 +43,7 @@ void WaveTable::generateSineTable()
 	sampleCount = tableLength;
 	for (int i = 0; i < tableLength; ++i) {
 		double x = static_cast<double>(i) / SAMPLE_RATE;
-		samples[i] = sin(2.0 * M_PI * BASE_FREQUENCY * x);
+		samples[i] = sin(2.0 * M_PI * BASE_FREQUENCY * x + phaseShift);
 	}
 }
 
@@ -59,7 +61,7 @@ void WaveTable::generateSawtoothTable()
 		double x = static_cast<double>(i) / SAMPLE_RATE;
 		samples[i] = -sin(2.0 * M_PI * BASE_FREQUENCY * x);
 		for (int j = 2; j * harmonicFrequency < SAMPLE_RATE / 2; ++j) {
-			samples[i] += pow(-1.0, j) * (sin(2.0 * M_PI * BASE_FREQUENCY * j * x) / j);			
+			samples[i] += pow(-1.0, j) * (sin(2.0 * M_PI * BASE_FREQUENCY * j * x + 2.0 * j * phaseShift) / j);			
 		}
 
 		samples[i] = 0.5 - (1.0 / M_PI) * samples[i];

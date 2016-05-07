@@ -18,6 +18,7 @@ Oscillator::Oscillator() : _table(wtSawtooth)
 
 	volumeParameter = new Parameter(1.0, 0.0, 1.0);
 	volumeEnvelopeParameter = new Parameter(1.0, 0.0, 1.0);
+	phaseParameter = new Parameter(2.0 * M_PI, 0.0, M_PI);
 }
 
 Oscillator::~Oscillator()
