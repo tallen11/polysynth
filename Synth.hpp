@@ -3,6 +3,7 @@
 #include "Oscillator.hpp"
 #include "EnvelopeGenerator.hpp"
 #include "VolumeModule.hpp"
+#include "Filter.hpp"
 #include <vector>
 
 struct OscillatorGroup
@@ -10,9 +11,7 @@ struct OscillatorGroup
 	int midiKey = -1;
 	std::vector<Oscillator*> oscillators;
 	VolumeModule volumeModule;
-	EnvelopeGenerator *volumeEnvelope;
-	// Filter
-	// Filter envelope
+	Filter filter;
 	// FX Somehow???
 	// std::vector<double> sampleBuffer;
 

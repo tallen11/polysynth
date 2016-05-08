@@ -10,6 +10,7 @@ Filter::Filter()
 
 	frequencyCutoffParameter = new Parameter(MIN_FREQUENCY, MAX_FREQUENCY, MIN_FREQUENCY);
 	resonanceParameter = new Parameter(1.0, 0.0, 0.0);
+	frequencyCutoffEnvelope = nullptr;
 }
 
 Filter::~Filter()
@@ -20,17 +21,21 @@ Filter::~Filter()
 
 void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
 {
-	/* Process coefficients */
-	double g = tan((M_PI * frequencyCutoffParameter->getValue()) / SAMPLE_RATE);
-	k = 1.0 - (0.99 * resonanceParameter->getValue());
-	double ginv = g / (1.0 + g * (g + k));
-	g1 = ginv;
-	g2 = 2.0 * (g + k) * ginv;
-	g3 = g * ginv;
-	g4 = 2.0 * ginv;
-
 	/* May need separate buffers for input/output */
 	for (int i = 0; i < bufferLength; ++i) {
+
+		/* Process coefficients */
+		double env = frequencyCutoffEnvelope == nullptr ? 1.0 : frequencyCutoffEnvelope->getNextMultiplier();
+		double fcp = frequencyCutoffParameter->getValue() * env;
+
+		double g = tan((M_PI * fcp) / SAMPLE_RATE);
+		k = 1.0 - (0.99 * resonanceParameter->getValue());
+		double ginv = g / (1.0 + g * (g + k));
+		g1 = ginv;
+		g2 = 2.0 * (g + k) * ginv;
+		g3 = g * ginv;
+		g4 = 2.0 * ginv;
+
 		double v0 = samples[i];
 		double v1z = v1;
 		double v2z = v2;
@@ -42,4 +47,9 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
 
 		samples[i] = v2;
 	}
+}
+
+void Filter::setFrequencyCutoffEnvelope(EnvelopeGenerator *envelope)
+{
+	frequencyCutoffEnvelope = envelope;
 }

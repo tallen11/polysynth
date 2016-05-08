@@ -17,14 +17,14 @@ public:
 	EnvelopeGenerator();
 	EnvelopeGenerator(double attack, double decay, double sustain, double release);
 	~EnvelopeGenerator();
-	void update();
+	double getNextMultiplier();
 	void notePressed();
 	void noteReleased();
 	void setAttack(double attack);
 	void setDecay(double decay);
 	void setSustain(double sustain);
 	void setRelease(double release);
-	void setParameter(Parameter *parameter);
+	// void setParameter(Parameter *parameter);
 
 private:
 	double attack;
@@ -33,7 +33,7 @@ private:
 	double release;
 	double lastMultiplier;
 	double startMultiplier;
-	Parameter *parameter;
+	// Parameter *parameter;
 	EnvelopeState state;
 	uint64_t stateCounter;
 	uint64_t progressCounter;

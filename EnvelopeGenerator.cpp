@@ -33,11 +33,14 @@ EnvelopeGenerator::~EnvelopeGenerator()
 
 }
 
-void EnvelopeGenerator::update()
+double EnvelopeGenerator::getNextMultiplier()
 {
+	double mult = 0.0;
 	switch (state) {
 		case esWaiting: {
-			parameter->multiplyValue(0.0);
+			// parameter->multiplyValue(0.0);
+			mult = 0.0;
+
 			lastMultiplier = 0.0;
 			startMultiplier = 0.0;
 			break;
@@ -48,11 +51,13 @@ void EnvelopeGenerator::update()
 			progressCounter++;
 			if (stateCounter > attack) {
 				state = esDecaying;
+				mult = lastMultiplier;
 				break;
 			}
 
 			double multiplier = ((1.0 - startMultiplier) / attack) * stateCounter + startMultiplier;
-			parameter->multiplyValue(multiplier);
+			mult = multiplier;
+			// parameter->multiplyValue(multiplier);
 
 			lastMultiplier = multiplier;
 			break;
@@ -63,11 +68,13 @@ void EnvelopeGenerator::update()
 			progressCounter++;
 			if (stateCounter > attack + decay) {
 				state = esSustaining;
+				mult = lastMultiplier;
 				break;
 			}
 
 			double multiplier = ((sustain - 1.0) / decay) * (stateCounter - attack) + 1.0;
-			parameter->multiplyValue(multiplier);
+			mult = multiplier;
+			// parameter->multiplyValue(multiplier);
 
 			lastMultiplier = multiplier;
 			startMultiplier = multiplier;
@@ -77,7 +84,9 @@ void EnvelopeGenerator::update()
 		case esSustaining: {
 			stateCounter++;
 			progressCounter++;
-			parameter->multiplyValue(sustain);
+
+			mult = sustain;
+			// parameter->multiplyValue(sustain);
 
 			lastMultiplier = sustain;
 			startMultiplier = sustain;
@@ -93,12 +102,15 @@ void EnvelopeGenerator::update()
 			}
 
 			double multiplier = (-lastMultiplier / release) * (stateCounter - progressCounter) + lastMultiplier;
-			parameter->multiplyValue(multiplier);
+			mult = multiplier;
+			// parameter->multiplyValue(multiplier);
 			
 			startMultiplier = multiplier;
 			break;
 		}
 	}
+
+	return mult;
 }
 
 void EnvelopeGenerator::notePressed()
@@ -137,7 +149,7 @@ void EnvelopeGenerator::setRelease(double release)
 	this->release = SAMPLE_RATE * release;
 }
 
-void EnvelopeGenerator::setParameter(Parameter *parameter)
-{
-	this->parameter = parameter;
-}
+// void EnvelopeGenerator::setParameter(Parameter *parameter)
+// {
+// 	this->parameter = parameter;
+// }
