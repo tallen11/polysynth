@@ -31,18 +31,18 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 
 static void midiCallback(double deltaTime, std::vector<unsigned char> *message, void *userData)
 {
+	(void)deltaTime;
+
 	auto synth = static_cast<Synth*>(userData);
 	std::vector<unsigned char>& messageRef = *message;
 	unsigned char status = messageRef[0] >> 4;
 	switch (status) {
 		case 8:
-			// std::cout << "Note off! Key: " << (int)messageRef[1] << ", vel: " << (int)messageRef[2] << std::endl;
-			synth->keyReleased((int)messageRef[1]);
+			synth->keyReleased(static_cast<int>(messageRef[1]));
 			break;
 
 		case 9:
-			// std::cout << "Note on! Key: " << (int)messageRef[1] << ", vel: " << (int)messageRef[2] << std::endl;
-			synth->keyPressed((int)messageRef[1]);
+			synth->keyPressed(static_cast<int>(messageRef[1]));
 			break;
 
 		case 11:

@@ -7,7 +7,25 @@
 
 struct OscillatorGroup
 {
-	std::vector<Oscillator*> oscillators
+	int midiKey = -1;
+	std::vector<Oscillator*> oscillators;
+	VolumeModule volumeModule;
+	EnvelopeGenerator *volumeEnvelope;
+	// Filter
+	// Filter envelope
+	// FX Somehow???
+
+	double getNextSample()
+	{
+		double sample = 0.0;
+		for (auto oscillator : oscillators) {
+			sample += oscillator->getNextSample();
+		}
+
+		sample /= static_cast<double>(oscillators.size());
+
+		return volumeModule.processSample(sample);
+	}
 };
 
 class Synth
@@ -22,10 +40,13 @@ public:
 	void pitchBend(double amount);
 
 private:
-	std::vector<Oscillator*> oscillators;
+	OscillatorGroup* getNextOscillatorGroup();
+
+	std::vector<OscillatorGroup*> oscillatorGroups;
+	int oscillatorGroupsIndex;
 	std::vector<EnvelopeGenerator*> envelopes;
 	
 	std::vector<double> sampleBuffer;
 	
-	VolumeModule volumeModule;
+	VolumeModule masterVolumeModule;
 };

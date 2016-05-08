@@ -39,6 +39,7 @@ void EnvelopeGenerator::update()
 		case esWaiting: {
 			parameter->multiplyValue(0.0);
 			lastMultiplier = 0.0;
+			startMultiplier = 0.0;
 			break;
 		}
 
@@ -50,9 +51,9 @@ void EnvelopeGenerator::update()
 				break;
 			}
 
-
 			double multiplier = ((1.0 - startMultiplier) / attack) * stateCounter + startMultiplier;
 			parameter->multiplyValue(multiplier);
+
 			lastMultiplier = multiplier;
 			break;
 		}
@@ -67,7 +68,9 @@ void EnvelopeGenerator::update()
 
 			double multiplier = ((sustain - 1.0) / decay) * (stateCounter - attack) + 1.0;
 			parameter->multiplyValue(multiplier);
+
 			lastMultiplier = multiplier;
+			startMultiplier = multiplier;
 			break;
 		}
 
@@ -75,7 +78,9 @@ void EnvelopeGenerator::update()
 			stateCounter++;
 			progressCounter++;
 			parameter->multiplyValue(sustain);
+
 			lastMultiplier = sustain;
+			startMultiplier = sustain;
 			break;
 		}
 
@@ -89,6 +94,8 @@ void EnvelopeGenerator::update()
 
 			double multiplier = (-lastMultiplier / release) * (stateCounter - progressCounter) + lastMultiplier;
 			parameter->multiplyValue(multiplier);
+			
+			startMultiplier = multiplier;
 			break;
 		}
 	}
@@ -99,8 +106,6 @@ void EnvelopeGenerator::notePressed()
 	state = esAttacking;
 	stateCounter = 0;
 	progressCounter = 0;
-	startMultiplier = lastMultiplier;
-	// lastMultiplier = 0.0;
 }
 
 void EnvelopeGenerator::noteReleased()
