@@ -28,25 +28,10 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 
 		oscillatorGroups.push_back(oGroup);
 	}
-
-	// auto osc = new Oscillator();
-	// auto osc2 = new Oscillator();
-	// osc2->getFrequencyParameter()->setValue(444.0);
-
-	// auto env = new EnvelopeGenerator(0.5, 0.1, 0.9, 0.1);
-	// env->setParameter(masterVolumeModule.getVolumeEnvelopeParameter());
-
-	// oscillators.push_back(osc);
-	// oscillators.push_back(osc2);
-	// envelopes.push_back(env);
 }
 
 Synth::~Synth()
 {
-	// for (auto oscillator : oscillators) {
-	// 	delete oscillator;
-	// }
-
 	for (auto oGroup : oscillatorGroups) {
 		for (auto oscillator : oGroup->oscillators) {
 			delete oscillator;
@@ -72,10 +57,8 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 		// =========== Mixer Goes Here =================
 		for (auto oGroup : oscillatorGroups) {
 			double subSample = oGroup->getNextSample();
-			// if (subSample != 0.0) {
-				sample += subSample;
-				++sampleCount;
-			// }
+			sample += subSample;
+			++sampleCount;
 		}
 
 		sample /= static_cast<double>(sampleCount);
@@ -91,10 +74,6 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 	// ============ Filter Goes Here =================
 	// 		Pass buffer through filter
 	// ============ Filter Goes Here =================
-
-	// for (int i = 0; i < bufferLength; ++i) {
-	// 	sampleBuffer[i] = volumeModule.processSample(sampleBuffer[i]);
-	// }
 
 	return sampleBuffer;
 }
@@ -117,18 +96,6 @@ void Synth::keyPressed(int midiKey)
 	oGroup->volumeEnvelope->notePressed();
 	// Trigger filter envelope too
 	oGroup->midiKey = midiKey;
-
-
-
-
-
-	// for (auto oscillator : oscillators) {
-	// 	oscillator->getFrequencyParameter()->multiplyValue(multiplier);
-	// }
-
-	// for (auto envelope : envelopes) {
-	// 	envelope->notePressed();
-	// }
 }
 
 void Synth::keyReleased(int midiKey)
@@ -141,17 +108,11 @@ void Synth::keyReleased(int midiKey)
 			break;
 		}
 	}
-
-	// for (auto envelope : envelopes) {
-	// 	envelope->noteReleased();
-	// }
 }
 
 void Synth::pitchBend(double amount)
 {
-	// for (auto oscillator : oscillators) {
-	// 	oscillator->getFrequencyParameter()->multiplyValue(amount);
-	// }
+	
 }
 
 OscillatorGroup* Synth::getNextOscillatorGroup()
