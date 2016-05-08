@@ -17,18 +17,12 @@ public:
 	double getNextSample();
 
 	Parameter* getFrequencyParameter();
-	Parameter* getVolumeParameter();
-	Parameter* getVolumeEnvelopeParameter();
 
 private:
-	// double phaseValue;
-	// WaveTable **_tables;
 	WaveTable _table;
 	double _currentTableIndex;
 
 	Parameter *frequencyParameter;
-	Parameter *volumeParameter;
-	Parameter *volumeEnvelopeParameter;
 	Parameter *phaseParameter;
 };
 

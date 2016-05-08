@@ -2,6 +2,7 @@
 #include <PortAudio.h>
 #include <cmath>
 #include <string>
+#include <vector>
 
 #include "Constants.hpp"
 #include "Oscillator.hpp"
@@ -18,10 +19,11 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	auto out = static_cast<float*>(output);
 	auto synth = static_cast<Synth*>(userData);
 
+	auto samples = synth->getNextBuffer(frameCount);
+
 	for (int i = 0; i < frameCount; ++i) {
-		float sample = static_cast<float>(synth->getNextSample());
-		*out++ = sample;
-		*out++ = sample;
+		*out++ = samples[i];
+		*out++ = samples[i];
 	}
 
 	return paContinue;

@@ -2,7 +2,7 @@ CXX=clang++
 DEBUG=-g
 LFLAGS=-lportaudio -framework CoreFoundation -framework CoreAudio -framework CoreMidi
 CFLAGS=-Wall -pedantic -Wunused-parameter -Wold-style-cast -Wunreachable-code -std=c++14 $(DEBUG)
-SRC=Parameter.o WaveTable.o Oscillator.o EnvelopeGenerator.o Synth.o RtMidi.o main.o
+SRC=Parameter.o WaveTable.o Oscillator.o EnvelopeGenerator.o VolumeModule.o Synth.o RtMidi.o main.o
 
 all: $(SRC)
 	$(CXX) $(SRC) $(LFLAGS) -o bin/synth
@@ -18,6 +18,9 @@ Oscillator.o: Oscillator.cpp Oscillator.hpp
 
 EnvelopeGenerator.o: EnvelopeGenerator.cpp EnvelopeGenerator.hpp
 	$(CXX) EnvelopeGenerator.cpp $(CFLAGS) -c
+
+VolumeModule.o: VolumeModule.cpp VolumeModule.hpp
+	$(CXX) VolumeModule.cpp $(CFLAGS) -c
 
 Synth.o: Synth.cpp Synth.hpp
 	$(CXX) Synth.cpp $(CFLAGS) -c

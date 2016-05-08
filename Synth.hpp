@@ -2,6 +2,7 @@
 
 #include "Oscillator.hpp"
 #include "EnvelopeGenerator.hpp"
+#include "VolumeModule.hpp"
 #include <vector>
 
 class Synth
@@ -10,7 +11,7 @@ public:
 	Synth();
 	~Synth();
 	double getNextSample();
-	void getNextBuffer(std::vector<double> &samples, int bufferLength);
+	std::vector<double>& getNextBuffer(int bufferLength);
 	void setMasterVolume(double volume);
 	void keyPressed(int midiKey);
 	void keyReleased(int midiKey);
@@ -19,4 +20,6 @@ public:
 private:
 	std::vector<Oscillator*> oscillators;
 	std::vector<EnvelopeGenerator*> envelopes;
+	std::vector<double> sampleBuffer;
+	VolumeModule volumeModule;
 };
