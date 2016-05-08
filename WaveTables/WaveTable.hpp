@@ -4,7 +4,8 @@ enum WaveTableType
 {
 	wtSine = 0,
 	wtSquare = 1,
-	wtSawtooth = 2
+	wtSawtooth = 2,
+	wtTriangle = 3
 };
 
 struct WaveTable
@@ -16,6 +17,7 @@ struct WaveTable
 	void generateSineTable();
 	void generateSquareTable();
 	void generateSawtoothTable();
+	void generateTriangleTable();
 	void normalizeTable();
 
 	double *samples;
@@ -24,5 +26,5 @@ struct WaveTable
 	double phaseShift;
 
 	typedef void (WaveTable::*tableGeneratorFunc)();
-	tableGeneratorFunc generatorFuncs[3];
+	tableGeneratorFunc generatorFuncs[4];
 };
