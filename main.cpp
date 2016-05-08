@@ -37,20 +37,24 @@ static void midiCallback(double deltaTime, std::vector<unsigned char> *message, 
 	std::vector<unsigned char>& messageRef = *message;
 	unsigned char status = messageRef[0] >> 4;
 	switch (status) {
-		case 8:
+		case 8: {
 			synth->keyReleased(static_cast<int>(messageRef[1]));
 			break;
+		}
 
-		case 9:
-			synth->keyPressed(static_cast<int>(messageRef[1]));
+		case 9: {
+			double velocity = convertRanges(static_cast<double>(messageRef[2]), 0.0, 127.0, 0.0, 1.0);
+			synth->keyPressed(static_cast<int>(messageRef[1]), velocity);
 			break;
+		}
 
-		case 11:
+		case 11: {
 			if (messageRef[1] == 7) {
 				synth->setMasterVolume(convertRanges(static_cast<double>(messageRef[2]), 0.0, 127.0, 0.0, 1.0));
 			}
 
 			break;
+		}
 
 		// case 14:
 		// 	// This kind of works but it's more trouble than it's worth right now

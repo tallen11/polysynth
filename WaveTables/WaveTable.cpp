@@ -9,6 +9,7 @@ WaveTable::WaveTable(WaveTableType type)
 	generatorFuncs[1] = &WaveTable::generateSquareTable;
 	generatorFuncs[2] = &WaveTable::generateSawtoothTable;
 	generatorFuncs[3] = &WaveTable::generateTriangleTable;
+	generatorFuncs[4] = &WaveTable::generateExperimentalTable;
 
 	samples = nullptr;
 	sampleCount = 0;
@@ -24,6 +25,7 @@ WaveTable::WaveTable(WaveTableType type, double shift)
 	generatorFuncs[1] = &WaveTable::generateSquareTable;
 	generatorFuncs[2] = &WaveTable::generateSawtoothTable;
 	generatorFuncs[3] = &WaveTable::generateTriangleTable;
+	generatorFuncs[4] = &WaveTable::generateExperimentalTable;
 
 	samples = nullptr;
 	sampleCount = 0;
@@ -94,6 +96,19 @@ void WaveTable::generateTriangleTable()
 		}
 
 		samples[i] = (8.0 / (M_PI * M_PI)) * samples[i];
+	}
+}
+
+void WaveTable::generateExperimentalTable()
+{
+	generateSquareTable();
+
+	int tableLength = static_cast<int>(floor(SAMPLE_RATE / BASE_FREQUENCY));
+	samples = new double[tableLength];
+	sampleCount = tableLength;
+	for (int i = 0; i < tableLength; ++i) {
+		double x = static_cast<double>(i) / SAMPLE_RATE;
+		samples[i] = sin(2.0 * M_PI * BASE_FREQUENCY * x + sin(2.0 * M_PI * 3.0 * x));
 	}
 }
 

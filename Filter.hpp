@@ -13,6 +13,7 @@ public:
 	~Filter();
 	void processBuffer(std::vector<double> &samples, int bufferLength);
 	void setFrequencyCutoffEnvelope(EnvelopeGenerator *envelope);
+	EnvelopeGenerator* getFrequencyCutoffEnvelope();
 
 private:
 	double v0z;

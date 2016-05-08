@@ -13,10 +13,10 @@ struct OscillatorGroup
 	VolumeModule volumeModule;
 	Filter filter;
 	// FX Somehow???
-	// std::vector<double> sampleBuffer;
+	std::vector<double> sampleBuffer;
 
-	// OscillatorGroup() : sampleBuffer(BUFFER_SIZE, 0.0)
-	// { }
+	OscillatorGroup() : sampleBuffer(BUFFER_SIZE, 0.0)
+	{ }
 
 	double getNextSample()
 	{
@@ -27,7 +27,22 @@ struct OscillatorGroup
 
 		sample /= static_cast<double>(oscillators.size());
 
-		return volumeModule.processSample(sample);
+		return sample; // volumeModule.processSample(sample);
+	}
+
+	std::vector<double>& getNextBuffer(int bufferLength)
+	{
+		for (int i = 0; i < bufferLength; ++i) {
+			sampleBuffer[i] = getNextSample();
+		}
+
+		filter.processBuffer(sampleBuffer, bufferLength);
+
+		for (int i = 0; i < bufferLength; ++i) {
+			sampleBuffer[i] = volumeModule.processSample(sampleBuffer[i]);
+		}
+
+		return sampleBuffer;
 	}
 
 	// std::vector<double>& getNextBuffer(int bufferLength)
@@ -47,7 +62,7 @@ public:
 	~Synth();
 	std::vector<double>& getNextBuffer(int bufferLength);
 	void setMasterVolume(double volume);
-	void keyPressed(int midiKey);
+	void keyPressed(int midiKey, double velocity);
 	void keyReleased(int midiKey);
 	void pitchBend(double amount);
 

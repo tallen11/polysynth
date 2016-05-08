@@ -1,6 +1,7 @@
 #include "Filter.hpp"
 #include "Constants.hpp"
 #include <cmath>
+#include <iostream>
 
 Filter::Filter()
 {
@@ -8,7 +9,7 @@ Filter::Filter()
 	v1 = 0.0;
 	v2 = 0.0;
 
-	frequencyCutoffParameter = new Parameter(MIN_FREQUENCY, MAX_FREQUENCY, MIN_FREQUENCY);
+	frequencyCutoffParameter = new Parameter(MIN_FREQUENCY, MAX_FREQUENCY, MAX_FREQUENCY);
 	resonanceParameter = new Parameter(1.0, 0.0, 0.0);
 	frequencyCutoffEnvelope = nullptr;
 }
@@ -46,10 +47,17 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
 		v0z = v0;
 
 		samples[i] = v2;
+
+		// std::cout << env << std::endl;
 	}
 }
 
 void Filter::setFrequencyCutoffEnvelope(EnvelopeGenerator *envelope)
 {
 	frequencyCutoffEnvelope = envelope;
+}
+
+EnvelopeGenerator* Filter::getFrequencyCutoffEnvelope()
+{
+	return frequencyCutoffEnvelope;
 }
