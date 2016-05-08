@@ -5,12 +5,16 @@
 #include "VolumeModule.hpp"
 #include <vector>
 
+struct OscillatorGroup
+{
+	std::vector<Oscillator*> oscillators
+};
+
 class Synth
 {
 public:
 	Synth();
 	~Synth();
-	double getNextSample();
 	std::vector<double>& getNextBuffer(int bufferLength);
 	void setMasterVolume(double volume);
 	void keyPressed(int midiKey);
@@ -20,6 +24,8 @@ public:
 private:
 	std::vector<Oscillator*> oscillators;
 	std::vector<EnvelopeGenerator*> envelopes;
+	
 	std::vector<double> sampleBuffer;
+	
 	VolumeModule volumeModule;
 };

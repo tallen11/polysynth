@@ -6,11 +6,14 @@
 Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 {
 	auto osc = new Oscillator();
-	auto env = new EnvelopeGenerator(0.5, 0.1, 0.9, 0.1);
+	auto osc2 = new Oscillator();
+	osc2->getFrequencyParameter()->setValue(444.0);
 
+	auto env = new EnvelopeGenerator(0.5, 0.1, 0.9, 0.1);
 	env->setParameter(volumeModule.getVolumeEnvelopeParameter());
 
 	oscillators.push_back(osc);
+	oscillators.push_back(osc2);
 	envelopes.push_back(env);
 }
 
@@ -23,25 +26,6 @@ Synth::~Synth()
 	for (auto envelope : envelopes) {
 		delete envelope;
 	}
-}
-
-double Synth::getNextSample()
-{
-	// Update envelopes
-	for (auto envelope : envelopes) {
-		envelope->update();
-	}
-
-	// Mix all oscillator signals
-	double total = 0.0;
-	for (auto oscillator : oscillators) {
-		total += oscillator->getNextSample();
-	}
-	total /= oscillators.size();
-
-	total = volumeModule.processSample(total);
-
-	return total;
 }
 
 std::vector<double>& Synth::getNextBuffer(int bufferLength)
@@ -87,10 +71,10 @@ void Synth::setMasterVolume(double volume)
 void Synth::keyPressed(int midiKey)
 {
 	int key = -(REFERENCE_MIDI - midiKey);
-	double frequencyValue = convertToFrequencyValue(pow(2.0, (double)key / 12.0) * REFERENCE_FREQUENCY);
+	double multiplier = pow(2.0, static_cast<double>(key) / 12.0);
 
 	for (auto oscillator : oscillators) {
-		oscillator->getFrequencyParameter()->setValue(frequencyValue);
+		oscillator->getFrequencyParameter()->multiplyValue(multiplier);
 	}
 
 	for (auto envelope : envelopes) {

@@ -5,7 +5,7 @@
 
 Oscillator::Oscillator() : _table(wtSawtooth)
 {
-	frequencyParameter = new Parameter(0.0, 1.0, convertToFrequencyValue(OSCILLATOR_DESIRED_BASE_FREQUENCY));
+	frequencyParameter = new Parameter(0.0, 1.0, OSCILLATOR_DESIRED_BASE_FREQUENCY /* convertToFrequencyValue(OSCILLATOR_DESIRED_BASE_FREQUENCY) */);
 	phaseParameter = new Parameter(2.0 * M_PI, 0.0, M_PI);
 
 	_currentTableIndex = 0.0;
@@ -26,7 +26,7 @@ double Oscillator::getNextSample()
 
 	double sample = basePercentage * _table.samples[baseIndex] + nextPercentage * _table.samples[nextIndex];
 
-	double frequency = convertRanges(frequencyParameter->getValue(), 0.0, 1.0, MIN_FREQUENCY, MAX_FREQUENCY);
+	double frequency = frequencyParameter->getValue(); // convertRanges(frequencyParameter->getValue(), 0.0, 1.0, MIN_FREQUENCY, MAX_FREQUENCY);
 	_currentTableIndex += frequency / BASE_FREQUENCY; // _tableIndexIncrement;
 	if (_currentTableIndex >= _table.sampleCount) {
 		_currentTableIndex = _currentTableIndex - static_cast<double>(_table.sampleCount);
