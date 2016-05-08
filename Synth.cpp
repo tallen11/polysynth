@@ -14,14 +14,14 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		auto o2 = new Oscillator();
 		auto o3 = new Oscillator();
 		o1->getFrequencyParameter()->setValue(440.0);
-		o2->getFrequencyParameter()->setValue(442.0);
-		o3->getFrequencyParameter()->setValue(444.0);
+		o2->getFrequencyParameter()->setValue(220.0);
+		o3->getFrequencyParameter()->setValue(224.0);
 
 		oGroup->oscillators.push_back(o1);
 		oGroup->oscillators.push_back(o2);
 		oGroup->oscillators.push_back(o3);
 
-		auto env = new EnvelopeGenerator(0.01, 0.05, 0.9, 0.01);
+		auto env = new EnvelopeGenerator(0.01, 0.05, 0.9, 0.5);
 		env->setParameter(oGroup->volumeModule.getVolumeEnvelopeParameter());
 		envelopes.push_back(env);
 		oGroup->volumeEnvelope = env;
@@ -66,6 +66,8 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 
 		sampleBuffer[i] = masterVolumeModule.processSample(sample);
 	}
+
+
 
 	return sampleBuffer;
 }

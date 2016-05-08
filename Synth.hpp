@@ -14,6 +14,10 @@ struct OscillatorGroup
 	// Filter
 	// Filter envelope
 	// FX Somehow???
+	// std::vector<double> sampleBuffer;
+
+	// OscillatorGroup() : sampleBuffer(BUFFER_SIZE, 0.0)
+	// { }
 
 	double getNextSample()
 	{
@@ -26,6 +30,15 @@ struct OscillatorGroup
 
 		return volumeModule.processSample(sample);
 	}
+
+	// std::vector<double>& getNextBuffer(int bufferLength)
+	// {
+	// 	for (int i = 0; i < bufferLength; ++i) {
+	// 		sampleBuffer[i] = getNextSample();
+	// 	}
+
+	// 	return sampleBuffer;
+	// }
 };
 
 class Synth
@@ -45,8 +58,6 @@ private:
 	std::vector<OscillatorGroup*> oscillatorGroups;
 	int oscillatorGroupsIndex;
 	std::vector<EnvelopeGenerator*> envelopes;
-	
 	std::vector<double> sampleBuffer;
-	
 	VolumeModule masterVolumeModule;
 };

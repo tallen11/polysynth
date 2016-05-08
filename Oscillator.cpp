@@ -1,5 +1,4 @@
 #include "Oscillator.hpp"
-#include "Constants.hpp"
 #include <cmath>
 #include <iostream>
 

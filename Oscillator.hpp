@@ -3,10 +3,9 @@
 #include "WaveTables/WaveTable.hpp"
 #include "Parameter.hpp"
 #include "Util.hpp"
+#include "Constants.hpp"
 
 // #define TABLE_COUNT 32
-#define MAX_FREQUENCY 20000.0
-#define MIN_FREQUENCY 20.0
 #define OSCILLATOR_DESIRED_BASE_FREQUENCY 440.0
 
 class Oscillator
