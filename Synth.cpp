@@ -6,7 +6,7 @@
 Synth::Synth()
 {
 	auto osc = new Oscillator();
-	auto env = new EnvelopeGenerator(1.0, 0.1, 0.9, 1.0);
+	auto env = new EnvelopeGenerator(0.02, 0.1, 0.9, 0.02);
 
 	env->setParameter(osc->getVolumeEnvelopeParameter());
 
@@ -40,6 +40,13 @@ double Synth::getNextSample()
 	total /= oscillators.size();
 
 	return total;
+}
+
+void Synth::getNextBuffer(std::vector<double> &samples, int bufferLength)
+{
+	for (int i = 0; i < bufferLength; ++i) {
+		
+	}
 }
 
 void Synth::setMasterVolume(double volume)
