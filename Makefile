@@ -1,8 +1,8 @@
 CXX=clang++
 DEBUG=-g
 LFLAGS=-lportaudio -framework CoreFoundation -framework CoreAudio -framework CoreMidi
-CFLAGS=-Wall -pedantic -Wunused-parameter -Wold-style-cast -Wunreachable-code -std=c++14 $(DEBUG)
-SRC=Parameter.o WaveTable.o Oscillator.o Filter.o EnvelopeGenerator.o VolumeModule.o Synth.o RtMidi.o main.o
+CFLAGS=-Wall -pedantic -Wunused-parameter -Wunreachable-code -std=c++14 $(DEBUG)
+SRC=Parameter.o WaveTable.o Oscillator.o Filter.o EnvelopeGenerator.o VolumeModule.o Effect.o EffectsLoop.o EffectOverdrive.o EffectBitcrusher.o EffectDelay.o Synth.o RtMidi.o main.o
 
 all: $(SRC)
 	$(CXX) $(SRC) $(LFLAGS) -o bin/synth
@@ -24,6 +24,21 @@ EnvelopeGenerator.o: EnvelopeGenerator.cpp EnvelopeGenerator.hpp
 
 VolumeModule.o: VolumeModule.cpp VolumeModule.hpp
 	$(CXX) VolumeModule.cpp $(CFLAGS) -c
+
+Effect.o: Effects/Effect.cpp Effects/Effect.hpp
+	$(CXX) Effects/Effect.cpp $(CFLAGS) -c
+
+EffectsLoop.o: Effects/EffectsLoop.cpp Effects/EffectsLoop.hpp
+	$(CXX) Effects/EffectsLoop.cpp $(CFLAGS) -c
+
+EffectOverdrive.o: Effects/EffectOverdrive.cpp Effects/EffectOverdrive.hpp
+	$(CXX) Effects/EffectOverdrive.cpp $(CFLAGS) -c
+
+EffectBitcrusher.o: Effects/EffectBitcrusher.cpp Effects/EffectBitcrusher.hpp
+	$(CXX) Effects/EffectBitcrusher.cpp $(CFLAGS) -c
+
+EffectDelay.o: Effects/EffectDelay.cpp Effects/EffectDelay.hpp
+	$(CXX) Effects/EffectDelay.cpp $(CFLAGS) -c
 
 Synth.o: Synth.cpp Synth.hpp
 	$(CXX) Synth.cpp $(CFLAGS) -c

@@ -4,6 +4,7 @@
 #include "EnvelopeGenerator.hpp"
 #include "VolumeModule.hpp"
 #include "Filter.hpp"
+#include "Effects/EffectsLoop.hpp"
 #include <vector>
 
 struct OscillatorGroup
@@ -12,7 +13,6 @@ struct OscillatorGroup
 	std::vector<Oscillator*> oscillators;
 	VolumeModule volumeModule;
 	Filter filter;
-	// FX Somehow???
 	std::vector<double> sampleBuffer;
 
 	OscillatorGroup() : sampleBuffer(BUFFER_SIZE, 0.0)
@@ -44,15 +44,6 @@ struct OscillatorGroup
 
 		return sampleBuffer;
 	}
-
-	// std::vector<double>& getNextBuffer(int bufferLength)
-	// {
-	// 	for (int i = 0; i < bufferLength; ++i) {
-	// 		sampleBuffer[i] = getNextSample();
-	// 	}
-
-	// 	return sampleBuffer;
-	// }
 };
 
 class Synth

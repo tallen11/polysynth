@@ -89,16 +89,19 @@ void setupPortAudio(PaStream *stream, void *userData)
 	error = Pa_Initialize();
     if (error != paNoError) {
         std::cout << "PortAudio error: " << Pa_GetErrorText(error) << std::endl;
+        exit(-1);
     }
     
     error = Pa_OpenDefaultStream(&stream, 0, CHANNELS, paFloat32, SAMPLE_RATE, BUFFER_SIZE, portAudioCallback, userData);
     if (error != paNoError) {
         std::cout << "PortAudio stream error: " << Pa_GetErrorText(error) << std::endl;
+        exit(-1);
     }
     
     error = Pa_StartStream(stream);
     if (error != paNoError) {
         std::cout << "PortAudio stream start error: " << Pa_GetErrorText(error) << std::endl;
+        exit(-1);
     }
 }
 
@@ -122,6 +125,10 @@ void setupRtMidi(RtMidiIn *midiIn, Synth *synth)
 		}
 
 		std::cout << "Input port " << i + 1 << ": " << portName << std::endl;
+	}
+
+	if (nPorts == 0) {
+		exit(-1);
 	}
 
 	midiIn->openPort(0);
