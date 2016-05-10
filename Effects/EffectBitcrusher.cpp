@@ -3,8 +3,8 @@
 
 EffectBitcrusher::EffectBitcrusher()
 {
-	bitsParameter = new Parameter(63.0, 0.0, 0.0);
-	rateParameter = new Parameter(10.0, 1.0, 1.0);
+	bitsParameter = new Parameter(63.0, 0.0, 59.0);
+	rateParameter = new Parameter(10.0, 1.0, 3.0);
 	rateCounter = 0;
 }
 

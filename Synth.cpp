@@ -1,5 +1,7 @@
 #include "Synth.hpp"
 #include "Constants.hpp"
+#include "Effects/EffectOverdrive.hpp"
+#include "Effects/EffectBitcrusher.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -7,30 +9,37 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 {
 	oscillatorGroupsIndex = 0;
 
+	auto overdrive = new EffectOverdrive();
+	// auto bitcrusher = new EffectBitcrusher();
+	effectsLoop.addEffect(overdrive);
+	// effectsLoop.addEffect(bitcrusher);
+
 	for (int i = 0; i < 8; ++i) {
 		auto oGroup = new OscillatorGroup;
 
 		auto o1 = new Oscillator();
 		auto o2 = new Oscillator();
-		auto o3 = new Oscillator();
+		// auto o3 = new Oscillator();
 		// auto o4 = new Oscillator();
 		o1->getFrequencyParameter()->setValue(440.0);
 		o2->getFrequencyParameter()->setValue(442.0);
-		o3->getFrequencyParameter()->setValue(444.0);
+		// o3->getFrequencyParameter()->setValue(444.0);
 		// o4->getFrequencyParameter()->setValue(446.0);
 
 		oGroup->oscillators.push_back(o1);
 		oGroup->oscillators.push_back(o2);
-		oGroup->oscillators.push_back(o3);
+		// oGroup->oscillators.push_back(o3);
 		// oGroup->oscillators.push_back(o4);
 
-		auto env = new EnvelopeGenerator(0.01, 0.1, 0.85, 0.02);
+		auto env = new EnvelopeGenerator(0.05, 0.01, 0.9, 0.05);
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
-		auto fEnv = new EnvelopeGenerator(0.1, 0.02, 0.1, 0.2);
+		auto fEnv = new EnvelopeGenerator(0.01, 0.1, 0.1, 0.5);
 		oGroup->filter.setFrequencyCutoffEnvelope(fEnv);
 		envelopes.push_back(fEnv);
+
+		// oGroup->effectsLoop = &effectsLoop;
 
 		// env->setParameter(oGroup->volumeModule.getVolumeEnvelopeParameter());
 		// oGroup->volumeEnvelope = env;
@@ -69,6 +78,12 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 			sampleBuffer[i] += subBuffer[i];
 		}
 	}
+
+	for (int i = 0; i < bufferLength; ++i) {
+		sampleBuffer[i] /= oscillatorGroups.size();
+	}
+
+	// effectsLoop.processBuffer(sampleBuffer, bufferLength);
 
 	for (int i = 0; i < bufferLength; ++i) {
 		sampleBuffer[i] = masterVolumeModule.processSample(sampleBuffer[i]);
