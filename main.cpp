@@ -114,8 +114,14 @@ void setupRtMidi(RtMidiIn *midiIn, Synth *synth)
 	}
 
 	unsigned int nPorts = midiIn->getPortCount();
-	std::cout << "RtMidi found " << nPorts << " MIDI sources" << std::endl;
+	if (nPorts == 0) {
+		std::cout << "No MIDI devices found" << std::endl;
+		exit(-1);
+	}
 
+	// std::cout << "RtMidi found " << nPorts << " MIDI sources" << std::endl;
+
+	std::vector<std::string> midiNames;
 	std::string portName;
 	for (unsigned int i = 0; i < nPorts; ++i) {
 		try {
@@ -124,12 +130,11 @@ void setupRtMidi(RtMidiIn *midiIn, Synth *synth)
 			error.printMessage();
 		}
 
-		std::cout << "Input port " << i + 1 << ": " << portName << std::endl;
+		midiNames.push_back(portName);
+		// std::cout << "Input port " << i + 1 << ": " << portName << std::endl;
 	}
 
-	if (nPorts == 0) {
-		exit(-1);
-	}
+	std::cout << "Using MIDI device " << 0 << ": " << midiNames[0] << std::endl;
 
 	midiIn->openPort(0);
 	midiIn->setCallback(&midiCallback, synth);
@@ -140,13 +145,20 @@ int main(int argc, char const *argv[])
 	(void)argc;
 	(void)argv;
 
-	// auto oscillator = new Oscillator();
-	// oscillator->setFrequencyValue(convertRanges(440.0, 20.0, 20000.0, 0.0, 1.0));
-
 	auto synth = new Synth();
 
 	PaStream *stream = nullptr;
 	setupPortAudio(stream, synth);
+
+	const std::string title = "\n" + std::string(
+	"    _____       ______     _____             __  __     \n") + std::string(
+  	"   / ___/____  / __/ /_   / ___/__  ______  / /_/ /_    \n") + std::string(
+  	"   \\__ \\/ __ \\/ /_/ __/   \\__ \\/ / / / __ \\/ __/ __ \\   \n") + std::string(
+    "  ___/ / /_/ / __/ /_    ___/ / /_/ / / / / /_/ / / /   \n") + std::string(
+    " /____/\\____/_/  \\__/   /____/\\__, /_/ /_/\\__/_/ /_/ \n") + std::string(
+    "                             /____/                   \n");
+
+    std::cout << title << std::endl;
 
 	RtMidiIn *midiIn = nullptr;
 	setupRtMidi(midiIn, synth);

@@ -25,7 +25,7 @@ void EffectOverdrive::processBuffer(std::vector<double> &samples, int bufferLeng
 		// }
 
 		double sample = samples[i] * gainParameter->getValue();
-		samples[i] = (sample / fabs(sample) * (1.0 - exp(-pow(sample, 2.0) / fabs(sample)))), sample / fabs(sample);
+		samples[i] = (sample / fabs(sample) * (1.0 - exp(-pow(sample, 2.0) / fabs(sample))));
 	}
 }
 

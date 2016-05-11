@@ -12,17 +12,21 @@ class Oscillator
 {
 public:
 	Oscillator();
+	Oscillator(WaveTable *leftTable, WaveTable *rightTable);
 	~Oscillator();
 	double getNextSample();
 
 	Parameter* getFrequencyParameter();
+	Parameter* getTableParameter();
 
 private:
 	WaveTable _table;
+	WaveTable _table2;
 	double _currentTableIndex;
 
 	Parameter *frequencyParameter;
 	Parameter *phaseParameter;
+	Parameter *tableParameter;
 };
 
 inline double convertToFrequencyValue(double frequency)

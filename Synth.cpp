@@ -19,30 +19,30 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 
 		auto o1 = new Oscillator();
 		auto o2 = new Oscillator();
-		// auto o3 = new Oscillator();
-		// auto o4 = new Oscillator();
+		auto o3 = new Oscillator();
+		auto o4 = new Oscillator();
+
 		o1->getFrequencyParameter()->setValue(440.0);
 		o2->getFrequencyParameter()->setValue(442.0);
-		// o3->getFrequencyParameter()->setValue(444.0);
-		// o4->getFrequencyParameter()->setValue(446.0);
+		o3->getFrequencyParameter()->setValue(444.0);
+		o4->getFrequencyParameter()->setValue(220.0);
+
+		o1->getTableParameter()->setValue(0.0);
+		o2->getTableParameter()->setValue(0.0);
+		o3->getTableParameter()->setValue(0.0);
 
 		oGroup->oscillators.push_back(o1);
 		oGroup->oscillators.push_back(o2);
-		// oGroup->oscillators.push_back(o3);
-		// oGroup->oscillators.push_back(o4);
+		oGroup->oscillators.push_back(o3);
+		oGroup->oscillators.push_back(o4);
 
 		auto env = new EnvelopeGenerator(0.05, 0.01, 0.9, 0.05);
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
-		auto fEnv = new EnvelopeGenerator(0.01, 0.1, 0.1, 0.5);
+		auto fEnv = new EnvelopeGenerator(0.1, 0.1, 1.0, 1.0);
 		oGroup->filter.setFrequencyCutoffEnvelope(fEnv);
 		envelopes.push_back(fEnv);
-
-		// oGroup->effectsLoop = &effectsLoop;
-
-		// env->setParameter(oGroup->volumeModule.getVolumeEnvelopeParameter());
-		// oGroup->volumeEnvelope = env;
 
 		oscillatorGroups.push_back(oGroup);
 	}
@@ -153,7 +153,7 @@ void Synth::pitchBend(double amount)
 	
 }
 
-OscillatorGroup* Synth::getNextOscillatorGroup()
+inline OscillatorGroup* Synth::getNextOscillatorGroup()
 {
 	auto oGroup = oscillatorGroups[oscillatorGroupsIndex];
 	oscillatorGroupsIndex++;

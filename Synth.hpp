@@ -12,7 +12,6 @@ struct OscillatorGroup
 	int midiKey = -1;
 	std::vector<Oscillator*> oscillators;
 	VolumeModule volumeModule;
-	EffectsLoop *effectsLoop;
 	Filter filter;
 	std::vector<double> sampleBuffer;
 
@@ -37,7 +36,6 @@ struct OscillatorGroup
 			sampleBuffer[i] = getNextSample();
 		}
 
-		// effectsLoop->processBuffer(sampleBuffer, bufferLength);
 		filter.processBuffer(sampleBuffer, bufferLength);
 
 		for (int i = 0; i < bufferLength; ++i) {
