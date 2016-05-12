@@ -2,6 +2,7 @@
 
 #include "Parameter.hpp"
 #include "EnvelopeGenerator.hpp"
+#include "LFO.hpp"
 
 class VolumeModule
 {
@@ -11,6 +12,7 @@ public:
 	~VolumeModule();
 	double processSample(double sample);
 	void setVolumeEnvelope(EnvelopeGenerator *envelope);
+	void setVolumeLFO(LFO *lfo);
 	EnvelopeGenerator* getVolumeEnvelope();
 	Parameter* getVolumeParameter();
 	// Parameter* getVolumeEnvelopeParameter();
@@ -18,5 +20,6 @@ public:
 private:
 	Parameter *volumeParameter;
 	EnvelopeGenerator *volumeEnvelope;
+	LFO *volumeLFO;
 	// Parameter *volumeEnvelopeParameter;
 };

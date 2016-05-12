@@ -69,7 +69,8 @@ private:
 	std::vector<double> sampleBuffer;
 	EffectsLoop effectsLoop;
 	VolumeModule masterVolumeModule;
-	LFO volumeLFO;
+	LFO *volumeLFO;
+	LFO *filterLFO;
 	int oscillatorGroupsIndex;
 	WaveTable *leftWaveTable;
 	WaveTable *rightWaveTable;

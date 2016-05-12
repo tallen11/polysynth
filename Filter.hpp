@@ -2,6 +2,7 @@
 
 #include "Parameter.hpp"
 #include "EnvelopeGenerator.hpp"
+#include "LFO.hpp"
 #include <vector>
 
 /* Based on Moog filter filter */
@@ -13,9 +14,11 @@ public:
 	~Filter();
 	void processBuffer(std::vector<double> &samples, int bufferLength);
 	void setFrequencyCutoffEnvelope(EnvelopeGenerator *envelope);
+	void setFilterLFO(LFO *lfo);
 	EnvelopeGenerator* getFrequencyCutoffEnvelope();
 	Parameter* getFrequencyCutoffParameter();
 	Parameter* getResonanceParameter();
+	LFO* getFilterLFO();
 
 private:
 	double f;
@@ -32,5 +35,6 @@ private:
 	Parameter *frequencyCutoffParameter;
 	Parameter *resonanceParameter;
 	EnvelopeGenerator *frequencyCutoffEnvelope;
+	LFO *filterLFO;
 	// EnvelopeGenerator *resonanceEnvelope;
 };

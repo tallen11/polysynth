@@ -15,11 +15,15 @@ LFO::~LFO()
 	delete amplitudeParameter;
 }
 
-double LFO::getNextSample()
+double LFO::getMultiplier()
 {
 	double x = static_cast<double>(currentSample) / SAMPLE_RATE;
-	++currentSample;
 	return sin(2.0 * M_PI * frequencyParameter->getValue() * x);
+}
+
+void LFO::stepLFO()
+{
+	++currentSample;
 }
 
 Parameter* LFO::getFrequencyParameter()

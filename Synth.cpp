@@ -11,6 +11,14 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 	leftWaveTable = new WaveTable(wtSawtooth);
 	rightWaveTable = new WaveTable(wtSquare);
 
+	/* Setup LFOs */
+	volumeLFO = new LFO();
+	filterLFO = new LFO();
+	volumeLFO->getFrequencyParameter()->setValue(10.0);
+	volumeLFO->getAmplitudeParameter()->setValue(0.1);
+	filterLFO->getFrequencyParameter()->setValue(0.0);
+	filterLFO->getAmplitudeParameter()->setValue(0.9);
+
 	/* Create the oscillators and their envelopes, filters, and filter envelopes */
 	for (int i = 0; i < 8; ++i) {
 		auto oGroup = new OscillatorGroup;
@@ -39,12 +47,16 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
-		auto fEnv = new EnvelopeGenerator(0.01, 0.1, 1.0, 1.0);
+		auto fEnv = new EnvelopeGenerator(0.05, 0.01, 0.8, 0.5);
 		oGroup->filter.setFrequencyCutoffEnvelope(fEnv);
 		envelopes.push_back(fEnv);
 
+		oGroup->filter.setFilterLFO(filterLFO);
+
 		oscillatorGroups.push_back(oGroup);
 	}
+
+	masterVolumeModule.setVolumeLFO(volumeLFO);
 
 	/* Create the effects loop */
 	auto overdrive = new EffectOverdrive();
@@ -53,10 +65,6 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 	bitcrusher->setEnabled(false);
 	effectsLoop.addEffect(overdrive);
 	effectsLoop.addEffect(bitcrusher);
-
-	/* Set initial LFO parameters */
-	volumeLFO.getFrequencyParameter()->setValue(10.0);
-	volumeLFO.getAmplitudeParameter()->setValue(0.2);
 
 	oscillatorGroupsIndex = 0;
 }
@@ -74,6 +82,9 @@ Synth::~Synth()
 	for (auto envelope : envelopes) {
 		delete envelope;
 	}
+
+	delete volumeLFO;
+	delete filterLFO;
 
 	delete leftWaveTable;
 	delete rightWaveTable;
@@ -102,9 +113,8 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 	// effectsLoop.processBuffer(sampleBuffer, bufferLength);
 
 	for (int i = 0; i < bufferLength; ++i) {
-		double sample = masterVolumeModule.processSample(sampleBuffer[i]);
-		sampleBuffer[i] = sample - (volumeLFO.getNextSample() * volumeLFO.getAmplitudeParameter()->getValue() * sample);
-		// sampleBuffer[i] = masterVolumeModule.processSample(sampleBuffer[i]) - (volumeLFO.getNextSample() * );
+		sampleBuffer[i] = masterVolumeModule.processSample(sampleBuffer[i]);
+		volumeLFO->stepLFO();
 	}
 
 	return sampleBuffer;
@@ -112,7 +122,12 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 
 void Synth::setMasterVolume(double volume)
 {
-	masterVolumeModule.getVolumeParameter()->setSeekValue(volume);
+	// masterVolumeModule.getVolumeParameter()->setSeekValue(volume);
+	for (auto oGroup : oscillatorGroups) {
+		for (auto oscillator : oGroup->oscillators) {
+			oscillator->getTableParameter()->setValue(volume);
+		}
+	}
 }
 
 void Synth::keyPressed(int midiKey, double velocity)

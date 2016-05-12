@@ -1,5 +1,6 @@
 #include "Filter.hpp"
 #include "Constants.hpp"
+#include "Util.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -17,8 +18,9 @@ Filter::Filter()
     t2 = 0;
 
 	frequencyCutoffParameter = new Parameter(MIN_FREQUENCY, MAX_FREQUENCY, MAX_FREQUENCY, true);
-	resonanceParameter = new Parameter(1.0, 0.0, 0.6, true);
+	resonanceParameter = new Parameter(1.0, 0.0, 0.7, true);
 	frequencyCutoffEnvelope = nullptr;
+	filterLFO = nullptr;
 }
 
 Filter::~Filter()
@@ -31,7 +33,12 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
 {
 	for (int i = 0; i < bufferLength; i++) {
 		/* Calculate parameters */
-		double frequency = frequencyCutoffParameter->getValue() / (0.5 * SAMPLE_RATE);
+		double fcp = frequencyCutoffParameter->getValue();
+		double lfo = filterLFO == nullptr ? 0.0 : filterLFO->getMultiplier();
+		double lfoAmp = filterLFO == nullptr ? 0.0 : filterLFO->getAmplitudeParameter()->getValue();
+		double lfoFreq = convertRanges(lfo, -1.0, 1.0, MIN_FREQUENCY, fcp);
+		double env = frequencyCutoffEnvelope == nullptr ? 1.0 : frequencyCutoffEnvelope->getNextMultiplier();
+		double frequency = env * (fcp - lfoFreq * lfoAmp + 20.0) / (0.5 * SAMPLE_RATE);
 	    double resonance = resonanceParameter->getValue();
 
 	    if (frequency < 0)
@@ -59,46 +66,19 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
         // Highpass output:  in - bf4;
         // Bandpass output:  3.0f * (bf3 - bf4);
         samples[i] = bf4;
+
+        filterLFO->stepLFO();
     }
-
-
-
-
-
-
-	// /* May need separate buffers for input/output */
-	// for (int i = 0; i < bufferLength; ++i) {
-
-	// 	/* Process coefficients */
-	// 	double env = frequencyCutoffEnvelope == nullptr ? 1.0 : frequencyCutoffEnvelope->getNextMultiplier();
-	// 	double fcp = frequencyCutoffParameter->getValue() * env;
-
-	// 	double g = tan((M_PI * fcp) / SAMPLE_RATE);
-	// 	k = 1.0 - (0.99 * resonanceParameter->getValue());
-	// 	double ginv = g / (1.0 + g * (g + k));
-	// 	g1 = ginv;
-	// 	g2 = 2.0 * (g + k) * ginv;
-	// 	g3 = g * ginv;
-	// 	g4 = 2.0 * ginv;
-
-	// 	double v0 = samples[i];
-	// 	double v1z = v1;
-	// 	double v2z = v2;
-	// 	double v3 = v0 + v0z - 2.0 * v2z;
-
-	// 	v1 += g1 * v3 - g2 * v1z;
-	// 	v2 += g3 * v3 + g4 * v1z;
-	// 	v0z = v0;
-
-	// 	samples[i] = v2;
-
-	// 	// std::cout << env << std::endl;
-	// }
 }
 
 void Filter::setFrequencyCutoffEnvelope(EnvelopeGenerator *envelope)
 {
 	frequencyCutoffEnvelope = envelope;
+}
+
+void Filter::setFilterLFO(LFO *lfo)
+{
+	filterLFO = lfo;
 }
 
 EnvelopeGenerator* Filter::getFrequencyCutoffEnvelope()
@@ -116,3 +96,7 @@ Parameter* Filter::getResonanceParameter()
 	return resonanceParameter;
 }
 
+LFO* Filter::getFilterLFO()
+{
+	return filterLFO;
+}

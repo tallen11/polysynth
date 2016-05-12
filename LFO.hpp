@@ -8,7 +8,8 @@ class LFO
 public:
 	LFO();
 	~LFO();
-	double getNextSample();
+	double getMultiplier();
+	void stepLFO();
 	Parameter* getFrequencyParameter();
 	Parameter* getAmplitudeParameter();
 

@@ -101,14 +101,13 @@ void WaveTable::generateTriangleTable()
 
 void WaveTable::generateExperimentalTable()
 {
-	generateSquareTable();
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	int tableLength = static_cast<int>(floor(SAMPLE_RATE / BASE_FREQUENCY));
 	samples = new double[tableLength];
 	sampleCount = tableLength;
 	for (int i = 0; i < tableLength; ++i) {
-		double x = static_cast<double>(i) / SAMPLE_RATE;
-		samples[i] = sin(2.0 * M_PI * BASE_FREQUENCY * x + sin(2.0 * M_PI * 3.0 * x));
+		samples[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 	}
 }
 
