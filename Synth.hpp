@@ -17,7 +17,9 @@ struct OscillatorGroup
 	std::vector<double> sampleBuffer;
 
 	OscillatorGroup() : sampleBuffer(BUFFER_SIZE, 0.0)
-	{ }
+	{
+		volumeModule.getVolumeParameter()->setInterpolates(false);
+	}
 
 	double getNextSample()
 	{

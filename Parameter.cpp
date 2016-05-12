@@ -20,6 +20,7 @@ Parameter::~Parameter()
 void Parameter::resetValue()
 {
 	value = baseValue;
+	seekValue = baseValue;
 }
 
 void Parameter::setValue(double val)
@@ -31,7 +32,8 @@ void Parameter::setValue(double val)
 
 void Parameter::multiplyValue(double mult)
 {
-	value =  baseValue * mult;
+	value = baseValue * mult;
+	seekValue = value;
 }
 
 double Parameter::getValue()
@@ -52,4 +54,9 @@ double Parameter::getValue()
 void Parameter::setSeekValue(double val)
 {
 	seekValue = val;
+}
+
+void Parameter::setInterpolates(bool smoothInterpolation)
+{
+	interpolates = smoothInterpolation;
 }

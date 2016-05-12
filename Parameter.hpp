@@ -9,6 +9,7 @@ public:
 	void setValue(double val);
 	void setSeekValue(double val);
 	void multiplyValue(double mult);
+	void setInterpolates(bool smoothInterpolation);
 	double getValue();
 
 private:	

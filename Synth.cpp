@@ -101,35 +101,12 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 		sampleBuffer[i] = masterVolumeModule.processSample(sampleBuffer[i]);
 	}
 
-
-	// for (int i = 0; i < bufferLength; ++i) {
-	// 	// for (auto envelope : envelopes) {
-	// 	// 	envelope->update();
-	// 	// }
-
-	// 	double sample = 0.0;
-	// 	int sampleCount = 0;
-	// 	// =========== Mixer Goes Here =================
-	// 	for (auto oGroup : oscillatorGroups) {
-	// 		double subSample = oGroup->getNextSample();
-	// 		sample += subSample;
-	// 		++sampleCount;
-	// 	}
-
-	// 	sample /= static_cast<double>(sampleCount);
-	// 	// =========== Mixer Goes Here =================
-
-	// 	sampleBuffer[i] = masterVolumeModule.processSample(sample);
-	// }
-
-
-
 	return sampleBuffer;
 }
 
 void Synth::setMasterVolume(double volume)
 {
-	masterVolumeModule.getVolumeParameter()->setValue(volume);
+	masterVolumeModule.getVolumeParameter()->setSeekValue(volume);
 }
 
 void Synth::keyPressed(int midiKey, double velocity)
