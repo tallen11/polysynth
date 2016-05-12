@@ -35,7 +35,7 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		oGroup->oscillators.push_back(o3);
 		// oGroup->oscillators.push_back(o4);
 
-		auto env = new EnvelopeGenerator(0.05, 0.01, 0.9, 0.05);
+		auto env = new EnvelopeGenerator(0.05, 0.01, 0.9, 0.5);
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
@@ -53,6 +53,10 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 	bitcrusher->setEnabled(false);
 	effectsLoop.addEffect(overdrive);
 	effectsLoop.addEffect(bitcrusher);
+
+	/* Set initial LFO parameters */
+	volumeLFO.getFrequencyParameter()->setValue(10.0);
+	volumeLFO.getAmplitudeParameter()->setValue(0.2);
 
 	oscillatorGroupsIndex = 0;
 }
@@ -98,7 +102,9 @@ std::vector<double>& Synth::getNextBuffer(int bufferLength)
 	// effectsLoop.processBuffer(sampleBuffer, bufferLength);
 
 	for (int i = 0; i < bufferLength; ++i) {
-		sampleBuffer[i] = masterVolumeModule.processSample(sampleBuffer[i]);
+		double sample = masterVolumeModule.processSample(sampleBuffer[i]);
+		sampleBuffer[i] = sample - (volumeLFO.getNextSample() * volumeLFO.getAmplitudeParameter()->getValue() * sample);
+		// sampleBuffer[i] = masterVolumeModule.processSample(sampleBuffer[i]) - (volumeLFO.getNextSample() * );
 	}
 
 	return sampleBuffer;
@@ -139,6 +145,17 @@ void Synth::keyReleased(int midiKey)
 
 void Synth::pitchBend(double amount)
 {
+	// for (auto oGroup : oscillatorGroups) {
+	// 	for (auto oscillator : oGroup->oscillators) {
+	// 		// if (amount == 0.0) {
+	// 			// oscillator->getFrequencyParameter()->resetValue();
+	// 		// } else {
+	// 			oscillator->getFrequencyParameter()->multiplySeekValue(amount);
+	// 		// }
+	// 	}
+	// }
+
+
 	double adjusted = pow(pow(10.0, amount), 0.1);
 	double conversion = convertRanges(adjusted, 1.0, pow(10.0, 0.1), 20.0, 20000.0);
 	for (auto oGroup : oscillatorGroups) {

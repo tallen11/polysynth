@@ -22,8 +22,9 @@ static int portAudioCallback(const void *input, void *output, unsigned long fram
 	auto samples = synth->getNextBuffer(frameCount);
 
 	for (int i = 0; i < frameCount; ++i) {
-		*out++ = samples[i];
-		*out++ = samples[i];
+		for (int j = 0; j < CHANNELS; ++j) {
+			*out++ = samples[i];
+		}
 	}
 
 	return paContinue;
@@ -60,26 +61,27 @@ static void midiCallback(double deltaTime, std::vector<unsigned char> *message, 
 			break;
 		}
 
-		// case 14:
-		// 	// This kind of works but it's more trouble than it's worth right now
-		// 	unsigned char lsb = messageRef[1];
-		// 	unsigned char msb = messageRef[2];
-		// 	unsigned int value = 0;
-		// 	value |= msb;
-		// 	value <<= 7;
-		// 	value |= lsb;
+		case 14: {
+			// This kind of works but it's more trouble than it's worth right now
+			unsigned char lsb = messageRef[1];
+			unsigned char msb = messageRef[2];
+			unsigned int value = 0;
+			value |= msb;
+			value <<= 7;
+			value |= lsb;
 			
-		// 	int half = value / 2;
-		// 	double freqMultiplier = 1.0;
-		// 	if (half < INT16_MAX / 2) {
-		// 		freqMultiplier = convertRanges(static_cast<double>(value), 0.0, 16383.0/2.0, 0.5, 1.0);
-		// 	} else if (half > INT16_MAX / 2) {
-		// 		freqMultiplier = convertRanges(static_cast<double>(value), 0.0, 16383.0/2.0, 1.0, 2.0);
-		// 	}
+			int half = value / 2;
+			double freqMultiplier = 1.0;
+			if (half < INT16_MAX / 2) {
+				freqMultiplier = convertRanges(static_cast<double>(value), 0.0, 16383.0/2.0, 0.5, 1.0);
+			} else if (half > INT16_MAX / 2) {
+				freqMultiplier = convertRanges(static_cast<double>(value), 0.0, 16383.0/2.0, 1.0, 2.0);
+			}
 
-		// 	synth->pitchBend(freqMultiplier);
+			synth->pitchBend(freqMultiplier);
 
-		// 	break;
+			break;
+		}
 
 		// default:
 			// std::cout << "Unhandled data with status: " << (int)status << std::endl;

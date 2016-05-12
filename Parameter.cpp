@@ -1,6 +1,6 @@
 #include "Parameter.hpp"
 
-#define P_CONST 0.001
+#define P_CONST 0.0005
 
 Parameter::Parameter(double maxVal, double minVal, double defaultVal, bool smoothInterpolation)
 {
@@ -34,6 +34,11 @@ void Parameter::multiplyValue(double mult)
 {
 	value = baseValue * mult;
 	seekValue = value;
+}
+
+void Parameter::multiplySeekValue(double mult)
+{
+	seekValue = value * mult;
 }
 
 double Parameter::getValue()

@@ -19,7 +19,7 @@ Oscillator::Oscillator(WaveTable *leftTable, WaveTable *rightTable)
 	_table = leftTable;
 	_table2 = rightTable;
 
-	frequencyParameter = new Parameter(0.0, 1.0, OSCILLATOR_DESIRED_BASE_FREQUENCY);
+	frequencyParameter = new Parameter(0.0, 1.0, OSCILLATOR_DESIRED_BASE_FREQUENCY, true);
 	phaseParameter = new Parameter(2.0 * M_PI, 0.0, M_PI);
 	tableParameter = new Parameter(1.0, 0.0, 0.0);
 
