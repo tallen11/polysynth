@@ -70,7 +70,6 @@ private:
 	EffectsLoop effectsLoop;
 	VolumeModule masterVolumeModule;
 	LFO *volumeLFO;
-	LFO *filterLFO;
 	int oscillatorGroupsIndex;
 	WaveTable *leftWaveTable;
 	WaveTable *rightWaveTable;

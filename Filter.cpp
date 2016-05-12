@@ -18,7 +18,7 @@ Filter::Filter()
     t2 = 0;
 
 	frequencyCutoffParameter = new Parameter(MIN_FREQUENCY, MAX_FREQUENCY, MAX_FREQUENCY, true);
-	resonanceParameter = new Parameter(1.0, 0.0, 0.7, true);
+	resonanceParameter = new Parameter(1.0, 0.0, 0.5, true);
 	frequencyCutoffEnvelope = nullptr;
 	filterLFO = nullptr;
 }

@@ -9,15 +9,12 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 {
 	/* Create the starting wavetables */
 	leftWaveTable = new WaveTable(wtSawtooth);
-	rightWaveTable = new WaveTable(wtSquare);
+	rightWaveTable = new WaveTable(wtSine);
 
 	/* Setup LFOs */
 	volumeLFO = new LFO();
-	filterLFO = new LFO();
 	volumeLFO->getFrequencyParameter()->setValue(10.0);
 	volumeLFO->getAmplitudeParameter()->setValue(0.1);
-	filterLFO->getFrequencyParameter()->setValue(0.0);
-	filterLFO->getAmplitudeParameter()->setValue(0.9);
 
 	/* Create the oscillators and their envelopes, filters, and filter envelopes */
 	for (int i = 0; i < 8; ++i) {
@@ -47,11 +44,14 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
-		auto fEnv = new EnvelopeGenerator(0.05, 0.01, 0.8, 0.5);
+		auto fEnv = new EnvelopeGenerator(0.1, 0.1, 0.4, 0.5);
 		oGroup->filter.setFrequencyCutoffEnvelope(fEnv);
 		envelopes.push_back(fEnv);
 
-		oGroup->filter.setFilterLFO(filterLFO);
+		auto fLFO = new LFO();
+		fLFO->getFrequencyParameter()->setValue(0.0);
+		fLFO->getAmplitudeParameter()->setValue(0.0);
+		oGroup->filter.setFilterLFO(fLFO);
 
 		oscillatorGroups.push_back(oGroup);
 	}
@@ -59,12 +59,12 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 	masterVolumeModule.setVolumeLFO(volumeLFO);
 
 	/* Create the effects loop */
-	auto overdrive = new EffectOverdrive();
-	auto bitcrusher = new EffectBitcrusher();
-	overdrive->setEnabled(false);
-	bitcrusher->setEnabled(false);
-	effectsLoop.addEffect(overdrive);
-	effectsLoop.addEffect(bitcrusher);
+	// auto overdrive = new EffectOverdrive();
+	// auto bitcrusher = new EffectBitcrusher();
+	// overdrive->setEnabled(false);
+	// bitcrusher->setEnabled(false);
+	// effectsLoop.addEffect(overdrive);
+	// effectsLoop.addEffect(bitcrusher);
 
 	oscillatorGroupsIndex = 0;
 }
@@ -76,6 +76,7 @@ Synth::~Synth()
 			delete oscillator;
 		}
 
+		delete oGroup->filter.getFilterLFO();
 		delete oGroup;
 	}
 
@@ -84,8 +85,6 @@ Synth::~Synth()
 	}
 
 	delete volumeLFO;
-	delete filterLFO;
-
 	delete leftWaveTable;
 	delete rightWaveTable;
 }
@@ -125,7 +124,7 @@ void Synth::setMasterVolume(double volume)
 	// masterVolumeModule.getVolumeParameter()->setSeekValue(volume);
 	for (auto oGroup : oscillatorGroups) {
 		for (auto oscillator : oGroup->oscillators) {
-			oscillator->getTableParameter()->setValue(volume);
+			oscillator->getTableParameter()->setSeekValue(volume);
 		}
 	}
 }
