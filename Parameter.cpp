@@ -1,11 +1,15 @@
 #include "Parameter.hpp"
 
-Parameter::Parameter(double maxVal, double minVal, double val)
+#define P_CONST 0.001
+
+Parameter::Parameter(double maxVal, double minVal, double defaultVal, bool smoothInterpolation)
 {
 	maxValue = maxVal;
 	minValue = minVal;
-	value = val;
-	baseValue = val;
+	value = defaultVal;
+	baseValue = defaultVal;
+	seekValue = defaultVal;
+	interpolates = smoothInterpolation;
 }
 
 Parameter::~Parameter()
@@ -22,6 +26,7 @@ void Parameter::setValue(double val)
 {
 	value = val;
 	baseValue = val;
+	seekValue = val;
 }
 
 void Parameter::multiplyValue(double mult)
@@ -29,7 +34,22 @@ void Parameter::multiplyValue(double mult)
 	value =  baseValue * mult;
 }
 
-double Parameter::getValue() const
+double Parameter::getValue()
 {
+	if (interpolates) {
+		double v = value;
+
+		/* Update "PID" loop */
+		double p = P_CONST * (seekValue - v);
+		value += p;
+
+		return v;
+	}
+
 	return value;
+}
+
+void Parameter::setSeekValue(double val)
+{
+	seekValue = val;
 }

@@ -3,16 +3,19 @@
 class Parameter
 {
 public:
-	Parameter(double maxVal, double minVal, double val = 0.0);
+	Parameter(double maxVal, double minVal, double defaultVal, bool smoothInterpolation = false);
 	~Parameter();
 	void resetValue();
 	void setValue(double val);
+	void setSeekValue(double val);
 	void multiplyValue(double mult);
-	double getValue() const;
+	double getValue();
 
 private:	
-	double value;
-	double baseValue;
 	double maxValue;
 	double minValue;
+	double value;
+	double baseValue;
+	double seekValue;
+	bool interpolates;
 };

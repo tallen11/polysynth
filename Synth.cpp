@@ -165,7 +165,7 @@ void Synth::pitchBend(double amount)
 	double adjusted = pow(pow(10.0, amount), 0.1);
 	double conversion = convertRanges(adjusted, 1.0, pow(10.0, 0.1), 20.0, 20000.0);
 	for (auto oGroup : oscillatorGroups) {
-		oGroup->filter.getFrequencyCutoffParameter()->setValue(conversion);
+		oGroup->filter.getFrequencyCutoffParameter()->setSeekValue(conversion);
 		// for (auto oscillator : oGroup->oscillators) {
 		// 	oscillator->getTableParameter()->setValue(amount);
 		// }
