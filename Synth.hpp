@@ -5,6 +5,7 @@
 #include "VolumeModule.hpp"
 #include "Filter.hpp"
 #include "Effects/EffectsLoop.hpp"
+#include "WaveTables/WaveTable.hpp"
 #include <vector>
 
 struct OscillatorGroup
@@ -61,9 +62,11 @@ private:
 	OscillatorGroup* getNextOscillatorGroup();
 
 	std::vector<OscillatorGroup*> oscillatorGroups;
-	int oscillatorGroupsIndex;
 	std::vector<EnvelopeGenerator*> envelopes;
 	std::vector<double> sampleBuffer;
 	EffectsLoop effectsLoop;
 	VolumeModule masterVolumeModule;
+	int oscillatorGroupsIndex;
+	WaveTable *leftWaveTable;
+	WaveTable *rightWaveTable;
 };

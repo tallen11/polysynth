@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-	Oscillator();
+	// Oscillator();
 	Oscillator(WaveTable *leftTable, WaveTable *rightTable);
 	~Oscillator();
 	double getNextSample();
@@ -20,8 +20,8 @@ public:
 	Parameter* getTableParameter();
 
 private:
-	WaveTable _table;
-	WaveTable _table2;
+	WaveTable *_table;
+	WaveTable *_table2;
 	double _currentTableIndex;
 
 	Parameter *frequencyParameter;

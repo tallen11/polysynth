@@ -18,6 +18,8 @@ void EffectsLoop::addEffect(Effect *effect)
 void EffectsLoop::processBuffer(std::vector<double> &samples, int bufferLength)
 {
 	for (auto effect : effects) {
-		effect->processBuffer(samples, bufferLength);
+		if (effect->isEnabled()) {
+			effect->processBuffer(samples, bufferLength);
+		}
 	}
 }

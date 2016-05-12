@@ -7,45 +7,54 @@
 
 Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 {
-	oscillatorGroupsIndex = 0;
+	/* Create the starting wavetables */
+	leftWaveTable = new WaveTable(wtSawtooth);
+	rightWaveTable = new WaveTable(wtSquare);
 
-	auto overdrive = new EffectOverdrive();
-	// auto bitcrusher = new EffectBitcrusher();
-	effectsLoop.addEffect(overdrive);
-	// effectsLoop.addEffect(bitcrusher);
-
+	/* Create the oscillators and their envelopes, filters, and filter envelopes */
 	for (int i = 0; i < 8; ++i) {
 		auto oGroup = new OscillatorGroup;
 
-		auto o1 = new Oscillator();
-		auto o2 = new Oscillator();
-		auto o3 = new Oscillator();
-		auto o4 = new Oscillator();
+		auto o1 = new Oscillator(leftWaveTable, rightWaveTable);
+		auto o2 = new Oscillator(leftWaveTable, rightWaveTable);
+		auto o3 = new Oscillator(leftWaveTable, rightWaveTable);
+		// auto o4 = new Oscillator(leftWaveTable, rightWaveTable);
 
 		o1->getFrequencyParameter()->setValue(440.0);
-		o2->getFrequencyParameter()->setValue(442.0);
-		o3->getFrequencyParameter()->setValue(444.0);
-		o4->getFrequencyParameter()->setValue(220.0);
+		o2->getFrequencyParameter()->setValue(440.5);
+		o3->getFrequencyParameter()->setValue(441.0);
+		// o4->getFrequencyParameter()->setValue(220.0);
 
 		o1->getTableParameter()->setValue(0.0);
 		o2->getTableParameter()->setValue(0.0);
 		o3->getTableParameter()->setValue(0.0);
+		// o4->getTableParameter()->setValue(0.0);
 
 		oGroup->oscillators.push_back(o1);
 		oGroup->oscillators.push_back(o2);
 		oGroup->oscillators.push_back(o3);
-		oGroup->oscillators.push_back(o4);
+		// oGroup->oscillators.push_back(o4);
 
 		auto env = new EnvelopeGenerator(0.05, 0.01, 0.9, 0.05);
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
-		auto fEnv = new EnvelopeGenerator(0.1, 0.1, 1.0, 1.0);
+		auto fEnv = new EnvelopeGenerator(0.01, 0.1, 1.0, 1.0);
 		oGroup->filter.setFrequencyCutoffEnvelope(fEnv);
 		envelopes.push_back(fEnv);
 
 		oscillatorGroups.push_back(oGroup);
 	}
+
+	/* Create the effects loop */
+	auto overdrive = new EffectOverdrive();
+	auto bitcrusher = new EffectBitcrusher();
+	overdrive->setEnabled(false);
+	bitcrusher->setEnabled(false);
+	effectsLoop.addEffect(overdrive);
+	effectsLoop.addEffect(bitcrusher);
+
+	oscillatorGroupsIndex = 0;
 }
 
 Synth::~Synth()
@@ -61,6 +70,9 @@ Synth::~Synth()
 	for (auto envelope : envelopes) {
 		delete envelope;
 	}
+
+	delete leftWaveTable;
+	delete rightWaveTable;
 }
 
 std::vector<double>& Synth::getNextBuffer(int bufferLength)
@@ -150,7 +162,14 @@ void Synth::keyReleased(int midiKey)
 
 void Synth::pitchBend(double amount)
 {
-	
+	double adjusted = pow(pow(10.0, amount), 0.1);
+	double conversion = convertRanges(adjusted, 1.0, pow(10.0, 0.1), 20.0, 20000.0);
+	for (auto oGroup : oscillatorGroups) {
+		oGroup->filter.getFrequencyCutoffParameter()->setValue(conversion);
+		// for (auto oscillator : oGroup->oscillators) {
+		// 	oscillator->getTableParameter()->setValue(amount);
+		// }
+	}
 }
 
 inline OscillatorGroup* Synth::getNextOscillatorGroup()
