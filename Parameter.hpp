@@ -19,5 +19,9 @@ private:
 	double value;
 	double baseValue;
 	double seekValue;
+
 	bool interpolates;
+
+	double errorSum;
+	double lastSeekValue;
 };

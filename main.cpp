@@ -55,7 +55,7 @@ static void midiCallback(double deltaTime, std::vector<unsigned char> *message, 
 				synth->setMasterVolume(convertRanges(static_cast<double>(messageRef[2]), 0.0, 127.0, 0.0, 1.0));
 			} else if (controlNumber == 1) {
 				double value = convertRanges(static_cast<double>(messageRef[2]), 0.0, 127.0, 0.0, 1.0);
-				synth->pitchBend(value);
+				synth->setMainFilterPitchCutoff(value);
 			}
 
 			break;

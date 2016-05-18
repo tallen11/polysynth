@@ -18,7 +18,7 @@ Filter::Filter()
     t2 = 0;
 
 	frequencyCutoffParameter = new Parameter(MIN_FREQUENCY, MAX_FREQUENCY, MAX_FREQUENCY, true);
-	resonanceParameter = new Parameter(1.0, 0.0, 0.5, true);
+	resonanceParameter = new Parameter(1.0, 0.0, 0.0, true);
 	frequencyCutoffEnvelope = nullptr;
 	filterLFO = nullptr;
 }
@@ -38,6 +38,10 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
 		double lfoAmp = filterLFO == nullptr ? 0.0 : filterLFO->getAmplitudeParameter()->getValue();
 		double lfoFreq = convertRanges(lfo, -1.0, 1.0, MIN_FREQUENCY, fcp);
 		double env = frequencyCutoffEnvelope == nullptr ? 1.0 : frequencyCutoffEnvelope->getNextMultiplier();
+		if (!frequencyCutoffEnvelope->isEnabled()) {
+			env = 1.0;
+		}
+
 		double frequency = env * (fcp - lfoFreq * lfoAmp + 20.0) / (0.5 * SAMPLE_RATE);
 	    double resonance = resonanceParameter->getValue();
 

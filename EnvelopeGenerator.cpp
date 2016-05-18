@@ -13,6 +13,7 @@ EnvelopeGenerator::EnvelopeGenerator()
 	release = SAMPLE_RATE;
 	lastMultiplier = 0.0;
 	startMultiplier = 0.0;
+	enabled = true;
 }
 
 EnvelopeGenerator::EnvelopeGenerator(double attack, double decay, double sustain, double release)
@@ -26,6 +27,7 @@ EnvelopeGenerator::EnvelopeGenerator(double attack, double decay, double sustain
 	this->release = SAMPLE_RATE * release;
 	lastMultiplier = 0.0;
 	startMultiplier = 0.0;
+	enabled = true;
 }
 
 EnvelopeGenerator::~EnvelopeGenerator()
@@ -147,6 +149,16 @@ void EnvelopeGenerator::setRelease(double release)
 {
 	// attack is measured in seconds and converted to samples
 	this->release = SAMPLE_RATE * release;
+}
+
+bool EnvelopeGenerator::isEnabled()
+{
+	return enabled;
+}
+
+void EnvelopeGenerator::setEnabled(bool setting)
+{
+	enabled = setting;
 }
 
 // void EnvelopeGenerator::setParameter(Parameter *parameter)

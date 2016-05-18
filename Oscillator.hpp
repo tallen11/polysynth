@@ -17,6 +17,7 @@ public:
 	double getNextSample();
 
 	Parameter* getFrequencyParameter();
+	Parameter* getPhaseParameter();
 	Parameter* getTableParameter();
 
 private:

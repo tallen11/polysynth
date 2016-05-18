@@ -1,8 +1,10 @@
 #pragma once
 
-// Use 96000 for sample rate for production
-#define SAMPLE_RATE 48000
-#define BUFFER_SIZE 1024
+// Ugly way of changing sample rate. Fix later
+static double synthSampleRate = 44100.0;
+
+#define SAMPLE_RATE (synthSampleRate)
+#define BUFFER_SIZE 512
 #define CHANNELS 2
 
 // Info for wavetable generation

@@ -13,7 +13,7 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 
 	/* Setup LFOs */
 	volumeLFO = new LFO();
-	volumeLFO->getFrequencyParameter()->setValue(10.0);
+	volumeLFO->getFrequencyParameter()->setValue(0.0);
 	volumeLFO->getAmplitudeParameter()->setValue(0.1);
 
 	/* Create the oscillators and their envelopes, filters, and filter envelopes */
@@ -26,13 +26,13 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		// auto o4 = new Oscillator(leftWaveTable, rightWaveTable);
 
 		o1->getFrequencyParameter()->setValue(440.0);
-		o2->getFrequencyParameter()->setValue(440.5);
-		o3->getFrequencyParameter()->setValue(441.0);
+		o2->getFrequencyParameter()->setValue(441.0);
+		o3->getFrequencyParameter()->setValue(442.0);
 		// o4->getFrequencyParameter()->setValue(220.0);
 
 		o1->getTableParameter()->setValue(0.0);
 		o2->getTableParameter()->setValue(0.0);
-		o3->getTableParameter()->setValue(0.0);
+		 o3->getTableParameter()->setValue(0.0);
 		// o4->getTableParameter()->setValue(0.0);
 
 		oGroup->oscillators.push_back(o1);
@@ -40,11 +40,12 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		oGroup->oscillators.push_back(o3);
 		// oGroup->oscillators.push_back(o4);
 
-		auto env = new EnvelopeGenerator(0.05, 0.01, 0.9, 0.5);
+		auto env = new EnvelopeGenerator(0.1, 0.01, 0.9, 0.25);
 		oGroup->volumeModule.setVolumeEnvelope(env);
 		envelopes.push_back(env);
 
-		auto fEnv = new EnvelopeGenerator(0.1, 0.1, 0.4, 0.5);
+		auto fEnv = new EnvelopeGenerator(0.5, 0.5, 0.5, 0.5);
+		fEnv->setEnabled(false);
 		oGroup->filter.setFrequencyCutoffEnvelope(fEnv);
 		envelopes.push_back(fEnv);
 
@@ -137,6 +138,7 @@ void Synth::keyPressed(int midiKey, double velocity)
 	auto oGroup = getNextOscillatorGroup();
 	for (auto oscillator : oGroup->oscillators) {
 		oscillator->getFrequencyParameter()->multiplyValue(multiplier);
+		// oscillator->getFrequencyParameter()->setValue(multiplier * REFERENCE_FREQUENCY);
 	}
 
 	// oGroup->volumeModule.getVolumeParameter()->setValue(velocity);
@@ -157,6 +159,8 @@ void Synth::keyReleased(int midiKey)
 	}
 }
 
+// Modify Synth Parameter methods here
+
 void Synth::pitchBend(double amount)
 {
 	// for (auto oGroup : oscillatorGroups) {
@@ -168,20 +172,99 @@ void Synth::pitchBend(double amount)
 	// 		// }
 	// 	}
 	// }
-
-
-	double adjusted = pow(pow(10.0, amount), 0.1);
-	double conversion = convertRanges(adjusted, 1.0, pow(10.0, 0.1), 20.0, 20000.0);
-	for (auto oGroup : oscillatorGroups) {
-		oGroup->filter.getFrequencyCutoffParameter()->setSeekValue(conversion);
-		// for (auto oscillator : oGroup->oscillators) {
-		// 	oscillator->getTableParameter()->setValue(amount);
-		// }
-	}
 }
+
+void Synth::setMainFilterPitchCutoff(double cutoff)
+{
+    double adjusted = pow(pow(10.0, cutoff), 0.1);
+    double conversion = convertRanges(adjusted, 1.0, pow(10.0, 0.1), 20.0, 20000.0);
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->filter.getFrequencyCutoffParameter()->setSeekValue(conversion);
+    }
+}
+
+void Synth::setMainFilterResonance(double resonance)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->filter.getResonanceParameter()->setSeekValue(resonance);
+    }
+}
+
+void Synth::setVolumeLFOFrequency(double frequency)
+{
+    volumeLFO->getFrequencyParameter()->setSeekValue(frequency);
+}
+
+void Synth::setVolumeLFOAmplitude(double amplitude)
+{
+    volumeLFO->getAmplitudeParameter()->setSeekValue(amplitude);
+}
+
+void Synth::setFilterLFOFrequency(double frequency)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->filter.getFilterLFO()->getFrequencyParameter()->setSeekValue(frequency);
+    }
+}
+
+void Synth::setFilterLFOAmplitude(double amplitude)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->filter.getFilterLFO()->getAmplitudeParameter()->setSeekValue(amplitude);
+    }
+}
+
+void Synth::setNoteAttackDuration(double duration)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->volumeModule.getVolumeEnvelope()->setAttack(duration);
+    }
+}
+
+void Synth::setNoteDecayDuration(double duration)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->volumeModule.getVolumeEnvelope()->setDecay(duration);
+    }
+}
+
+void Synth::setNoteSustainLevel(double level)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->volumeModule.getVolumeEnvelope()->setSustain(level);
+    }
+}
+
+void Synth::setNoteReleaseDuration(double duration)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->volumeModule.getVolumeEnvelope()->setRelease(duration);
+    }
+}
+
+// Modify Synth Parameter methods here
+
 
 inline OscillatorGroup* Synth::getNextOscillatorGroup()
 {
+	// OscillatorGroup *oGroup = oscillatorGroups[oscillatorGroupsIndex];
+	// if (oGroup->midiKey != -1) {
+	// 	for (int i = 0; i < oscillatorGroups.size(); ++i) {
+	// 		auto g = oscillatorGroups[i];
+	// 		if (g->midiKey != -1) {
+	// 			oGroup = g;
+	// 			break;
+	// 		}
+
+	// 		oGroup = nullptr;
+	// 	}
+	// }
+
+	// if (oGroup == nullptr) {
+	// 	oGroup = oscillatorGroups[oscillatorGroupsIndex];
+	// }
+
+	// oscillatorGroupsIndex++;
 	auto oGroup = oscillatorGroups[oscillatorGroupsIndex];
 	oscillatorGroupsIndex++;
 	if (oscillatorGroupsIndex >= oscillatorGroups.size()) {

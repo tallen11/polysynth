@@ -1,6 +1,8 @@
 #include "Parameter.hpp"
 
 #define P_CONST 0.0005
+#define I_CONST 0.01
+#define D_CONST 0.001
 
 Parameter::Parameter(double maxVal, double minVal, double defaultVal, bool smoothInterpolation)
 {
@@ -10,6 +12,8 @@ Parameter::Parameter(double maxVal, double minVal, double defaultVal, bool smoot
 	baseValue = defaultVal;
 	seekValue = defaultVal;
 	interpolates = smoothInterpolation;
+	lastSeekValue = 0.0;
+	errorSum = 0.0;
 }
 
 Parameter::~Parameter()
@@ -48,7 +52,12 @@ double Parameter::getValue()
 
 		/* Update "PID" loop */
 		double p = P_CONST * (seekValue - v);
-		value += p;
+		// double i = I_CONST * errorSum;
+
+
+		value += p; // + i;
+
+		// errorSum += I_CONST * p;
 
 		return v;
 	}

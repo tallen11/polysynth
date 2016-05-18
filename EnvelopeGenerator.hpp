@@ -24,6 +24,8 @@ public:
 	void setDecay(double decay);
 	void setSustain(double sustain);
 	void setRelease(double release);
+	bool isEnabled();
+	void setEnabled(bool setting);
 	// void setParameter(Parameter *parameter);
 
 private:
@@ -37,4 +39,5 @@ private:
 	EnvelopeState state;
 	uint64_t stateCounter;
 	uint64_t progressCounter;
+	bool enabled;
 };

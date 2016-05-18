@@ -60,6 +60,20 @@ public:
 	void keyPressed(int midiKey, double velocity);
 	void keyReleased(int midiKey);
 	void pitchBend(double amount);
+    
+    /* Modify the Synth */
+    void setMainFilterPitchCutoff(double cutoff);
+    void setMainFilterResonance(double resonance);
+    
+    void setVolumeLFOFrequency(double frequency);
+    void setVolumeLFOAmplitude(double amplitude);
+    void setFilterLFOFrequency(double frequency);
+    void setFilterLFOAmplitude(double amplitude);
+    
+    void setNoteAttackDuration(double duration);
+    void setNoteDecayDuration(double duration);
+    void setNoteSustainLevel(double level);
+    void setNoteReleaseDuration(double duration);
 
 private:
 	OscillatorGroup* getNextOscillatorGroup();
