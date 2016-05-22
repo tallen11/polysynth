@@ -1,9 +1,9 @@
 # Polyphonic Midi Synth
 
-* Uses wavetables
-* Fattest bass this side of world
+* Polyphonic, subtractive midi synthesizer using PortAudio and RTMidi. It's got oscillators, filters, LFOs and at least 8 voices of polyphony.
+* Uses wavetables. Currently can generate sine, sawtooth, square, and triangle (sort of) wave forms.
+* Is currently being made into a VST plugin.
 
 ### TODO
 
-* Share wavetable objects between oscillators to avoid costly, redundant work
 * Generate band-limited tables to avoid aliasing
