@@ -25,11 +25,15 @@ struct OscillatorGroup
 	double getNextSample()
 	{
 		double sample = 0.0;
+        int size = 0;
 		for (auto oscillator : oscillators) {
-			sample += oscillator->getNextSample();
+            if (oscillator->isEnabled()) {
+                sample += oscillator->getNextSample();
+                size++;
+            }
 		}
 
-		sample /= static_cast<double>(oscillators.size());
+		sample /= static_cast<double>(size);
 
 		return sample; // volumeModule.processSample(sample);
 	}
@@ -74,6 +78,11 @@ public:
     void setNoteDecayDuration(double duration);
     void setNoteSustainLevel(double level);
     void setNoteReleaseDuration(double duration);
+    
+    void toggleOscillator2();
+    
+    void setOscillatorWavetable(int oscillatorID, int wavetableID, int wavetable);
+    void setTableFadePercentage(int oscillatorID, double percentage);
 
 private:
 	OscillatorGroup* getNextOscillatorGroup();
@@ -85,6 +94,10 @@ private:
 	VolumeModule masterVolumeModule;
 	LFO *volumeLFO;
 	int oscillatorGroupsIndex;
-	WaveTable *leftWaveTable;
-	WaveTable *rightWaveTable;
+    WaveTable *sawtoothWavetable;
+    WaveTable *squareWavetable;
+    WaveTable *sineWavetable;
+    
+//	WaveTable *leftWaveTable;
+//	WaveTable *rightWaveTable;
 };

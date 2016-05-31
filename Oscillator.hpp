@@ -16,6 +16,10 @@ public:
 	~Oscillator();
 	double getNextSample();
 	void resetOscillator();
+    void toggleOscillator();
+    bool isEnabled();
+    void setLeftWavetable(WaveTable *wavtable);
+    void setRightWavetable(WaveTable *wavetable);
 
 	Parameter* getFrequencyParameter();
 	Parameter* getPhaseParameter();
@@ -36,6 +40,8 @@ private:
 	int voiceCount;
 	Parameter *voiceDetuneFactorParameter;
 	std::vector<double> voiceIndices;
+    
+    bool enabled;
 };
 
 inline double convertToFrequencyValue(double frequency)

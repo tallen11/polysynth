@@ -8,8 +8,11 @@
 Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 {
 	/* Create the starting wavetables */
-	leftWaveTable = new WaveTable(wtSawtooth);
-	rightWaveTable = new WaveTable(wtExperimental);
+//	leftWaveTable = new WaveTable(wtSawtooth);
+//	rightWaveTable = new WaveTable(wtExperimental);
+    sawtoothWavetable = new WaveTable(wtSawtooth);
+    squareWavetable = new WaveTable(wtSquare);
+    sineWavetable = new WaveTable(wtSine);
 
 	/* Setup LFOs */
 	volumeLFO = new LFO();
@@ -20,26 +23,31 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 	for (int i = 0; i < 8; ++i) {
 		auto oGroup = new OscillatorGroup;
 
-		auto o1 = new Oscillator(leftWaveTable, rightWaveTable);
-		// auto o2 = new Oscillator(leftWaveTable, rightWaveTable);
+		auto o1 = new Oscillator(sawtoothWavetable, squareWavetable);
+        auto o2 = new Oscillator(sawtoothWavetable, squareWavetable);
 		// auto o3 = new Oscillator(leftWaveTable, rightWaveTable);
 		// auto o4 = new Oscillator(leftWaveTable, rightWaveTable);
 
 		o1->getFrequencyParameter()->setValue(440.0);
-		// o2->getFrequencyParameter()->setValue(441.0);
+        o2->getFrequencyParameter()->setValue(440.0);
 		// o3->getFrequencyParameter()->setValue(442.0);
 		// o4->getFrequencyParameter()->setValue(220.0);
         
-        o1->setVoiceCount(2);
+        o1->setVoiceCount(3);
         o1->getVoiceDetuneFactorParameter()->setValue(0.00454545);
+        
+        o2->setVoiceCount(1);
+        o2->getVoiceDetuneFactorParameter()->setValue(0.0);
 
 		o1->getTableParameter()->setValue(0.0);
-		// o2->getTableParameter()->setValue(0.0);
+        o2->getTableParameter()->setValue(0.0);
         // o3->getTableParameter()->setValue(0.0);
 		// o4->getTableParameter()->setValue(0.0);
+        
+        o2->toggleOscillator();
 
 		oGroup->oscillators.push_back(o1);
-		// oGroup->oscillators.push_back(o2);
+        oGroup->oscillators.push_back(o2);
 		// oGroup->oscillators.push_back(o3);
 		// oGroup->oscillators.push_back(o4);
 
@@ -88,9 +96,12 @@ Synth::~Synth()
 		delete envelope;
 	}
 
-	delete volumeLFO;
-	delete leftWaveTable;
-	delete rightWaveTable;
+    delete sawtoothWavetable;
+    delete squareWavetable;
+    delete sineWavetable;
+    delete volumeLFO;
+//	delete leftWaveTable;
+//	delete rightWaveTable;
 }
 
 std::vector<double>& Synth::getNextBuffer(int bufferLength)
@@ -243,6 +254,50 @@ void Synth::setNoteReleaseDuration(double duration)
 {
     for (auto oGroup : oscillatorGroups) {
         oGroup->volumeModule.getVolumeEnvelope()->setRelease(duration);
+    }
+}
+
+void Synth::toggleOscillator2()
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->oscillators[1]->toggleOscillator();
+    }
+}
+
+void Synth::setOscillatorWavetable(int oscillatorID, int wavetableID, int wavetable)
+{
+    WaveTable *table = nullptr;
+    switch (wavetable) {
+        case 1:
+            table = sawtoothWavetable;
+            break;
+        case 2:
+            table = squareWavetable;
+            break;
+        case 3:
+            table = sineWavetable;
+            break;
+        default:
+            break;
+    }
+        
+    if (wavetableID == 0) {
+        for (auto oGroup : oscillatorGroups) {
+            oGroup->oscillators[oscillatorID]->resetOscillator();
+            oGroup->oscillators[oscillatorID]->setLeftWavetable(table);
+        }
+    } else {
+        for (auto oGroup : oscillatorGroups) {
+            oGroup->oscillators[oscillatorID]->resetOscillator();
+            oGroup->oscillators[oscillatorID]->setRightWavetable(table);
+        }
+    }
+}
+
+void Synth::setTableFadePercentage(int oscillatorID, double percentage)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->oscillators[oscillatorID]->getTableParameter()->setValue(percentage);
     }
 }
 

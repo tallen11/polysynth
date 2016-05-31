@@ -25,6 +25,8 @@ Oscillator::Oscillator(WaveTable *leftTable, WaveTable *rightTable)
 	voiceDetuneFactorParameter = new Parameter(1.0, 0.0, 0.0, true);
 
 	_currentTableIndex = 0.0;
+    
+    enabled = true;
 
 	setVoiceCount(1);
 }
@@ -47,8 +49,6 @@ double Oscillator::getNextSample()
 	for (int i = 0; i < voiceCount; ++i) {
 		double tableIndex = voiceIndices[i];
 
-		// std::cout << tableIndex << std::endl;
-
 		int baseIndex = static_cast<int>(floor(tableIndex));
 		int nextIndex = baseIndex + 1 >= _table->sampleCount ? 0 : baseIndex + 1;
 		double nextPercentage = tableIndex - static_cast<double>(baseIndex);
@@ -69,31 +69,33 @@ double Oscillator::getNextSample()
 
 
 
-		// int baseIndex = static_cast<int>(floor(_currentTableIndex));
+		// int baseIndex = static_cast<int>(floor(tableIndex));
 		// int nextIndex = baseIndex + 1 >= _table->sampleCount ? 0 : baseIndex + 1;
-		// double nextPercentage = _currentTableIndex - static_cast<double>(baseIndex);
+		// double nextPercentage = tableIndex - static_cast<double>(baseIndex);
 		// double basePercentage = 1.0 - nextPercentage;
 
 		// double sample1 = basePercentage * _table->samples[baseIndex] + nextPercentage * _table->samples[nextIndex];
 		// double sample2 = basePercentage * _table2->samples[baseIndex] + nextPercentage * _table2->samples[nextIndex];
 
-		// // double phaseMult = phaseParameter->getValue() * _table->sampleCount;
-		// // double phaseIndex = _currentTableIndex + phaseMult >= _table->sampleCount ? _currentTableIndex + phaseMult - _table->sampleCount : _currentTableIndex + phaseMult;
-		// // int phaseBaseIndex = static_cast<int>(floor(phaseIndex));
-		// // int nextPhaseIndex = phaseBaseIndex + 1 >= _table->sampleCount ? 0 : phaseBaseIndex + 1;
-		// // double nextPhasePercentage = phaseIndex - static_cast<double>(phaseBaseIndex);
-		// // double basePhasePercentage = 1.0 - nextPhasePercentage;
+		// double phaseMult = phaseParameter->getValue() * _table->sampleCount;
+		// double phaseIndex = tableIndex + phaseMult >= _table->sampleCount ? tableIndex + phaseMult - _table->sampleCount : _currentTableIndex + phaseMult;
+		// int phaseBaseIndex = static_cast<int>(floor(phaseIndex));
+		// int nextPhaseIndex = phaseBaseIndex + 1 >= _table->sampleCount ? 0 : phaseBaseIndex + 1;
+		// double nextPhasePercentage = phaseIndex - static_cast<double>(phaseBaseIndex);
+		// double basePhasePercentage = 1.0 - nextPhasePercentage;
 
-		// // double phaseSample1 = basePhasePercentage * _table->samples[phaseBaseIndex] + nextPhasePercentage * _table->samples[nextPhaseIndex]; 
-		// // double phaseSample2 = basePhasePercentage * _table2->samples[phaseBaseIndex] + nextPhasePercentage * _table2->samples[nextPhaseIndex]; 
+		// double phaseSample1 = basePhasePercentage * _table->samples[phaseBaseIndex] + nextPhasePercentage * _table->samples[nextPhaseIndex]; 
+		// double phaseSample2 = basePhasePercentage * _table2->samples[phaseBaseIndex] + nextPhasePercentage * _table2->samples[nextPhaseIndex]; 
 
-		// // sample1 -= phaseSample1;
-		// // sample2 -= phaseSample2;
+		// sample1 -= phaseSample1;
+		// sample2 -= phaseSample2;
 
-		// _currentTableIndex += frequencyParameter->getValue() / BASE_FREQUENCY;
-		// if (_currentTableIndex >= _table->sampleCount) {
-		// 	_currentTableIndex = _currentTableIndex - static_cast<double>(_table->sampleCount);
+		// tableIndex += (currentFrequency + voiceDetuneFactor * i * currentFrequency) / BASE_FREQUENCY;
+		// if (tableIndex >= _table->sampleCount) {
+		// 	tableIndex = tableIndex - static_cast<double>(_table->sampleCount);
 		// }
+
+		// voiceIndices[i] = tableIndex;
 
 		// double tableFade = tableParameter->getValue();
 
@@ -140,4 +142,24 @@ void Oscillator::setVoiceCount(int count)
 	for (int i = 0; i < count; ++i) {
 		voiceIndices.push_back(0.0);
 	}
+}
+
+void Oscillator::toggleOscillator()
+{
+    enabled = !enabled;
+}
+
+bool Oscillator::isEnabled()
+{
+    return enabled;
+}
+
+void Oscillator::setLeftWavetable(WaveTable *wavtable)
+{
+    _table = wavtable;
+}
+
+void Oscillator::setRightWavetable(WaveTable *wavetable)
+{
+    _table2 = wavetable;
 }
