@@ -1,7 +1,7 @@
 #pragma once
 
 // Ugly way of changing sample rate. Fix later
-static double synthSampleRate = 44100.0;
+static double synthSampleRate = 48000.0;
 
 #define SAMPLE_RATE (synthSampleRate)
 #define BUFFER_SIZE 512

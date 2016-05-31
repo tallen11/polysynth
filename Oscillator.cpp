@@ -22,8 +22,11 @@ Oscillator::Oscillator(WaveTable *leftTable, WaveTable *rightTable)
 	frequencyParameter = new Parameter(0.0, 1.0, OSCILLATOR_DESIRED_BASE_FREQUENCY, true);
 	phaseParameter = new Parameter(1.0, 0.0, 0.0, true);
 	tableParameter = new Parameter(1.0, 0.0, 0.0, true);
+	voiceDetuneFactorParameter = new Parameter(1.0, 0.0, 0.0, true);
 
 	_currentTableIndex = 0.0;
+
+	setVoiceCount(1);
 }
 
 Oscillator::~Oscillator()
@@ -31,39 +34,82 @@ Oscillator::~Oscillator()
 	delete frequencyParameter;
 	delete phaseParameter;
 	delete tableParameter;
+	delete voiceDetuneFactorParameter;
 }
 
 double Oscillator::getNextSample()
 {
-	int baseIndex = static_cast<int>(floor(_currentTableIndex));
-	int nextIndex = baseIndex + 1 >= _table->sampleCount ? 0 : baseIndex + 1;
-	double nextPercentage = _currentTableIndex - static_cast<double>(baseIndex);
-	double basePercentage = 1.0 - nextPercentage;
+	double tableFade = tableParameter->getValue();
+	double currentFrequency = frequencyParameter->getValue();
+	double voiceDetuneFactor = voiceDetuneFactorParameter->getValue();
+	double sample = 0.0;
+    
+	for (int i = 0; i < voiceCount; ++i) {
+		double tableIndex = voiceIndices[i];
 
-	double sample1 = basePercentage * _table->samples[baseIndex] + nextPercentage * _table->samples[nextIndex];
-	double sample2 = basePercentage * _table2->samples[baseIndex] + nextPercentage * _table2->samples[nextIndex];
+		// std::cout << tableIndex << std::endl;
 
-	// double phaseMult = phaseParameter->getValue() * _table->sampleCount;
-	// double phaseIndex = _currentTableIndex + phaseMult >= _table->sampleCount ? _currentTableIndex + phaseMult - _table->sampleCount : _currentTableIndex + phaseMult;
-	// int phaseBaseIndex = static_cast<int>(floor(phaseIndex));
-	// int nextPhaseIndex = phaseBaseIndex + 1 >= _table->sampleCount ? 0 : phaseBaseIndex + 1;
-	// double nextPhasePercentage = phaseIndex - static_cast<double>(phaseBaseIndex);
-	// double basePhasePercentage = 1.0 - nextPhasePercentage;
+		int baseIndex = static_cast<int>(floor(tableIndex));
+		int nextIndex = baseIndex + 1 >= _table->sampleCount ? 0 : baseIndex + 1;
+		double nextPercentage = tableIndex - static_cast<double>(baseIndex);
+		double basePercentage = 1.0 - nextPercentage;
+        
+		double sample1 = basePercentage * _table->samples[baseIndex] + nextPercentage * _table->samples[nextIndex];
+		double sample2 = basePercentage * _table2->samples[baseIndex] + nextPercentage * _table2->samples[nextIndex];
 
-	// double phaseSample1 = basePhasePercentage * _table->samples[phaseBaseIndex] + nextPhasePercentage * _table->samples[nextPhaseIndex]; 
-	// double phaseSample2 = basePhasePercentage * _table2->samples[phaseBaseIndex] + nextPhasePercentage * _table2->samples[nextPhaseIndex]; 
+		tableIndex += (currentFrequency + voiceDetuneFactor * i * currentFrequency) / BASE_FREQUENCY;
+		if (tableIndex >= _table->sampleCount) {
+			tableIndex = tableIndex - static_cast<double>(_table->sampleCount);
+		}
 
-	// sample1 -= phaseSample1;
-	// sample2 -= phaseSample2;
+		voiceIndices[i] = tableIndex;
 
-	_currentTableIndex += frequencyParameter->getValue() / BASE_FREQUENCY;
-	if (_currentTableIndex >= _table->sampleCount) {
-		_currentTableIndex = _currentTableIndex - static_cast<double>(_table->sampleCount);
+		sample += tableFade * sample2 + (1.0 - tableFade) * sample1;
+
+
+
+
+		// int baseIndex = static_cast<int>(floor(_currentTableIndex));
+		// int nextIndex = baseIndex + 1 >= _table->sampleCount ? 0 : baseIndex + 1;
+		// double nextPercentage = _currentTableIndex - static_cast<double>(baseIndex);
+		// double basePercentage = 1.0 - nextPercentage;
+
+		// double sample1 = basePercentage * _table->samples[baseIndex] + nextPercentage * _table->samples[nextIndex];
+		// double sample2 = basePercentage * _table2->samples[baseIndex] + nextPercentage * _table2->samples[nextIndex];
+
+		// // double phaseMult = phaseParameter->getValue() * _table->sampleCount;
+		// // double phaseIndex = _currentTableIndex + phaseMult >= _table->sampleCount ? _currentTableIndex + phaseMult - _table->sampleCount : _currentTableIndex + phaseMult;
+		// // int phaseBaseIndex = static_cast<int>(floor(phaseIndex));
+		// // int nextPhaseIndex = phaseBaseIndex + 1 >= _table->sampleCount ? 0 : phaseBaseIndex + 1;
+		// // double nextPhasePercentage = phaseIndex - static_cast<double>(phaseBaseIndex);
+		// // double basePhasePercentage = 1.0 - nextPhasePercentage;
+
+		// // double phaseSample1 = basePhasePercentage * _table->samples[phaseBaseIndex] + nextPhasePercentage * _table->samples[nextPhaseIndex]; 
+		// // double phaseSample2 = basePhasePercentage * _table2->samples[phaseBaseIndex] + nextPhasePercentage * _table2->samples[nextPhaseIndex]; 
+
+		// // sample1 -= phaseSample1;
+		// // sample2 -= phaseSample2;
+
+		// _currentTableIndex += frequencyParameter->getValue() / BASE_FREQUENCY;
+		// if (_currentTableIndex >= _table->sampleCount) {
+		// 	_currentTableIndex = _currentTableIndex - static_cast<double>(_table->sampleCount);
+		// }
+
+		// double tableFade = tableParameter->getValue();
+
+		// // sample += tableFade * sample2 + (1.0 - tableFade) * sample1;
+		// return tableFade * sample2 + (1.0 - tableFade) * sample1; // sample;
 	}
 
-	double tableFade = tableParameter->getValue();
+	sample /= static_cast<double>(voiceCount);
+	return sample;
+}
 
-	return tableFade * sample2 + (1.0 - tableFade) * sample1; // sample;
+void Oscillator::resetOscillator()
+{
+	for (int i = 0; i < voiceCount; ++i) {
+		voiceIndices[i] = 0.0;
+	}
 }
 
 Parameter* Oscillator::getFrequencyParameter()
@@ -79,4 +125,19 @@ Parameter* Oscillator::getPhaseParameter()
 Parameter* Oscillator::getTableParameter()
 {
 	return tableParameter;
+}
+
+Parameter* Oscillator::getVoiceDetuneFactorParameter()
+{
+	return voiceDetuneFactorParameter;
+}
+
+void Oscillator::setVoiceCount(int count)
+{
+	voiceIndices.clear();
+    voiceCount = count;
+
+	for (int i = 0; i < count; ++i) {
+		voiceIndices.push_back(0.0);
+	}
 }

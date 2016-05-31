@@ -9,7 +9,7 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 {
 	/* Create the starting wavetables */
 	leftWaveTable = new WaveTable(wtSawtooth);
-	rightWaveTable = new WaveTable(wtSine);
+	rightWaveTable = new WaveTable(wtExperimental);
 
 	/* Setup LFOs */
 	volumeLFO = new LFO();
@@ -21,23 +21,26 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 		auto oGroup = new OscillatorGroup;
 
 		auto o1 = new Oscillator(leftWaveTable, rightWaveTable);
-		auto o2 = new Oscillator(leftWaveTable, rightWaveTable);
-		auto o3 = new Oscillator(leftWaveTable, rightWaveTable);
+		// auto o2 = new Oscillator(leftWaveTable, rightWaveTable);
+		// auto o3 = new Oscillator(leftWaveTable, rightWaveTable);
 		// auto o4 = new Oscillator(leftWaveTable, rightWaveTable);
 
 		o1->getFrequencyParameter()->setValue(440.0);
-		o2->getFrequencyParameter()->setValue(441.0);
-		o3->getFrequencyParameter()->setValue(442.0);
+		// o2->getFrequencyParameter()->setValue(441.0);
+		// o3->getFrequencyParameter()->setValue(442.0);
 		// o4->getFrequencyParameter()->setValue(220.0);
+        
+        o1->setVoiceCount(2);
+        o1->getVoiceDetuneFactorParameter()->setValue(0.00454545);
 
 		o1->getTableParameter()->setValue(0.0);
-		o2->getTableParameter()->setValue(0.0);
-		 o3->getTableParameter()->setValue(0.0);
+		// o2->getTableParameter()->setValue(0.0);
+        // o3->getTableParameter()->setValue(0.0);
 		// o4->getTableParameter()->setValue(0.0);
 
 		oGroup->oscillators.push_back(o1);
-		oGroup->oscillators.push_back(o2);
-		oGroup->oscillators.push_back(o3);
+		// oGroup->oscillators.push_back(o2);
+		// oGroup->oscillators.push_back(o3);
 		// oGroup->oscillators.push_back(o4);
 
 		auto env = new EnvelopeGenerator(0.1, 0.01, 0.9, 0.25);
@@ -137,6 +140,7 @@ void Synth::keyPressed(int midiKey, double velocity)
 
 	auto oGroup = getNextOscillatorGroup();
 	for (auto oscillator : oGroup->oscillators) {
+		oscillator->resetOscillator();
 		oscillator->getFrequencyParameter()->multiplyValue(multiplier);
 		// oscillator->getFrequencyParameter()->setValue(multiplier * REFERENCE_FREQUENCY);
 	}

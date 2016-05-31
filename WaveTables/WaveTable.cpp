@@ -74,12 +74,13 @@ void WaveTable::generateSawtoothTable()
 	sampleCount = tableLength;
 	for (int i = 0; i < tableLength; ++i) {
 		double x = static_cast<double>(i) / SAMPLE_RATE;
-		samples[i] = -sin(2.0 * M_PI * BASE_FREQUENCY * x);
+		samples[i] = -sin(-2.0 * M_PI * BASE_FREQUENCY * x);
 		for (int j = 2; j * harmonicFrequency < SAMPLE_RATE / 2; ++j) {
-			samples[i] += pow(-1.0, j) * (sin(2.0 * M_PI * BASE_FREQUENCY * j * x + 2.0 * j * phaseShift) / j);			
+			samples[i] += pow(-1.0, j) * (-sin(2.0 * M_PI * BASE_FREQUENCY * j * x + 2.0 * j * phaseShift) / j);			
 		}
 
-		samples[i] = 0.5 - (1.0 / M_PI) * samples[i];
+		// samples[i] = 0.5 - (1.0 / M_PI) * samples[i];
+		samples[i] = (2.0 / M_PI) * samples[i];
 	}
 }
 

@@ -4,6 +4,7 @@
 #include "Parameter.hpp"
 #include "Util.hpp"
 #include "Constants.hpp"
+#include <vector>
 
 // #define TABLE_COUNT 32
 #define OSCILLATOR_DESIRED_BASE_FREQUENCY 440.0
@@ -11,14 +12,17 @@
 class Oscillator
 {
 public:
-	// Oscillator();
 	Oscillator(WaveTable *leftTable, WaveTable *rightTable);
 	~Oscillator();
 	double getNextSample();
+	void resetOscillator();
 
 	Parameter* getFrequencyParameter();
 	Parameter* getPhaseParameter();
 	Parameter* getTableParameter();
+
+	void setVoiceCount(int count);
+	Parameter* getVoiceDetuneFactorParameter();
 
 private:
 	WaveTable *_table;
@@ -28,6 +32,10 @@ private:
 	Parameter *frequencyParameter;
 	Parameter *phaseParameter;
 	Parameter *tableParameter;
+
+	int voiceCount;
+	Parameter *voiceDetuneFactorParameter;
+	std::vector<double> voiceIndices;
 };
 
 inline double convertToFrequencyValue(double frequency)
