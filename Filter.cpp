@@ -47,8 +47,8 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
 		double frequency = env * (fcp - lfoFreq * lfoAmp + 20.0) / (0.5 * SAMPLE_RATE);
 	    double resonance = resonanceParameter->getValue();
 
-	    if (frequency < 0)
-	    	frequency = 0;
+	    if (frequency < 0.0)
+	    	frequency = 0.0;
 	    if (frequency > 0.6) 
 	    	frequency = 0.6;
 
