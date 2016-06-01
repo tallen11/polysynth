@@ -20,7 +20,7 @@ Synth::Synth() : sampleBuffer(BUFFER_SIZE, 0.0)
 	volumeLFO->getAmplitudeParameter()->setValue(0.1);
 
 	/* Create the oscillators and their envelopes, filters, and filter envelopes */
-	for (int i = 0; i < 8; ++i) {
+	for (int i = 0; i < 32; ++i) {
 		auto oGroup = new OscillatorGroup;
 
 		auto o1 = new Oscillator(sawtoothWavetable, squareWavetable);
@@ -298,6 +298,20 @@ void Synth::setTableFadePercentage(int oscillatorID, double percentage)
 {
     for (auto oGroup : oscillatorGroups) {
         oGroup->oscillators[oscillatorID]->getTableParameter()->setValue(percentage);
+    }
+}
+
+void Synth::setOscillatorVoiceCount(int oscillatorID, int count)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->oscillators[oscillatorID]->setVoiceCount(count);
+    }
+}
+
+void Synth::setFilterType(FilterType type)
+{
+    for (auto oGroup : oscillatorGroups) {
+        oGroup->filter.setFilterType(type);
     }
 }
 

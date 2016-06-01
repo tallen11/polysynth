@@ -5,7 +5,13 @@
 #include "LFO.hpp"
 #include <vector>
 
-/* Based on Moog filter filter */
+/* Based on Moog filter */
+
+enum FilterType {
+    FilterTypeLowPass = 1,
+    FilterTypeHighPass = 2,
+    FilterTypeBandPass = 3
+};
 
 class Filter
 {
@@ -19,6 +25,7 @@ public:
 	Parameter* getFrequencyCutoffParameter();
 	Parameter* getResonanceParameter();
 	LFO* getFilterLFO();
+    void setFilterType(FilterType type);
 
 private:
 	double f;
@@ -36,5 +43,6 @@ private:
 	Parameter *resonanceParameter;
 	EnvelopeGenerator *frequencyCutoffEnvelope;
 	LFO *filterLFO;
+    FilterType type;
 	// EnvelopeGenerator *resonanceEnvelope;
 };

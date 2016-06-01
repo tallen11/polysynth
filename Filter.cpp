@@ -21,6 +21,8 @@ Filter::Filter()
 	resonanceParameter = new Parameter(1.0, 0.0, 0.6, true);
 	frequencyCutoffEnvelope = nullptr;
 	filterLFO = nullptr;
+    
+    type = FilterTypeLowPass;
 }
 
 Filter::~Filter()
@@ -69,10 +71,30 @@ void Filter::processBuffer(std::vector<double> &samples, int bufferLength)
         // Lowpass  output:  bf4
         // Highpass output:  in - bf4;
         // Bandpass output:  3.0f * (bf3 - bf4);
-        samples[i] = bf4;
+        // samples[i] = bf4;
+        
+        switch (type) {
+            case FilterTypeLowPass:
+                samples[i] = bf4;
+                break;
+            case FilterTypeHighPass:
+                samples[i] = in - bf4;
+                break;
+            case FilterTypeBandPass:
+                samples[i] = 3.0 * (bf3 - bf4);
+                break;
+            default:
+                samples[i] = bf4;
+                break;
+        }
 
         filterLFO->stepLFO();
     }
+}
+
+void Filter::setFilterType(FilterType type)
+{
+    this->type = type;
 }
 
 void Filter::setFrequencyCutoffEnvelope(EnvelopeGenerator *envelope)

@@ -83,6 +83,9 @@ public:
     
     void setOscillatorWavetable(int oscillatorID, int wavetableID, int wavetable);
     void setTableFadePercentage(int oscillatorID, double percentage);
+    
+    void setOscillatorVoiceCount(int oscillatorID, int count);
+    void setFilterType(FilterType type);
 
 private:
 	OscillatorGroup* getNextOscillatorGroup();
